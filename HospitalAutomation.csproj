@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9454A736-45A9-49F3-86D7-AE369E51347C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>HospitalAutomation</RootNamespace>
+    <AssemblyName>HospitalAutomation</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\System.Data.SQLite.EF6.1.0.119.0\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\System.Data.SQLite.Linq.1.0.119.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\HospitalDbContext.cs" />
+    <Compile Include="Data\HospitalDbInitializer.cs" />
+    <Compile Include="Data\Interfaces\IRepository.cs" />
+    <Compile Include="Data\Interfaces\ISpecificRepositories.cs" />
+    <Compile Include="Data\Interfaces\IUnitOfWork.cs" />
+    <Compile Include="Data\Repositories\AppointmentRepository.cs" />
+    <Compile Include="Data\Repositories\CityRepository.cs" />
+    <Compile Include="Data\Repositories\DepartmentRepository.cs" />
+    <Compile Include="Data\Repositories\DistrictRepository.cs" />
+    <Compile Include="Data\Repositories\MedicalRecordRepository.cs" />
+    <Compile Include="Data\Repositories\MedicationAdministrationRepository.cs" />
+    <Compile Include="Data\Repositories\MedicationRepository.cs" />
+    <Compile Include="Data\Repositories\NursingNoteRepository.cs" />
+    <Compile Include="Data\Repositories\PatientRepository.cs" />
+    <Compile Include="Data\Repositories\Repository.cs" />
+    <Compile Include="Data\Repositories\UserRepository.cs" />
+    <Compile Include="Data\Repositories\VitalSignsRepository.cs" />
+    <Compile Include="Data\UnitOfWork.cs" />
+    <Compile Include="Infrastructure\SimpleContainer.cs" />
+    <Compile Include="Models\Appointment.cs" />
+    <Compile Include="Models\BaseEntity.cs" />
+    <Compile Include="Models\City.cs" />
+    <Compile Include="Models\Department.cs" />
+    <Compile Include="Models\District.cs" />
+    <Compile Include="Models\Enums\Enums.cs" />
+    <Compile Include="Models\MedicalRecord.cs" />
+    <Compile Include="Models\Medication.cs" />
+    <Compile Include="Models\NursingNote.cs" />
+    <Compile Include="Models\Patient.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\VitalSigns.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AppointmentService.cs" />
+    <Compile Include="Services\Interfaces\IServices.cs" />
+    <Compile Include="Services\PatientService.cs" />
+    <Compile Include="Services\UserService.cs" />
+    <Compile Include="Tools\DatabaseFixerTool.cs" />
+    <Compile Include="Utilities\ComboBoxItem.cs" />
+    <Compile Include="Utilities\DatabaseTestHelper.cs" />
+    <Compile Include="Utilities\PasswordHelper.cs" />
+    <Compile Include="Utilities\SessionManager.cs" />
+    <Compile Include="Utilities\UserSettingsHelper.cs" />
+    <Compile Include="Utilities\ValidationHelper.cs" />
+    <Compile Include="Views\AppointmentManagement\AppointmentForms.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\AppointmentManagement\AppointmentForms.Designer.cs">
+      <DependentUpon>AppointmentForms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Authentication\ChangePasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Authentication\ChangePasswordForm.Designer.cs">
+      <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Authentication\PatientRegisterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Authentication\PatientRegisterForm.Designer.cs">
+      <DependentUpon>PatientRegisterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Authentication\RegisterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Authentication\RegisterForm.Designer.cs">
+      <DependentUpon>RegisterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Authentication\UserProfileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorAppointmentsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorAppointmentsForm.Designer.cs">
+      <DependentUpon>DoctorAppointmentsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorMainForm.Designer.cs">
+      <DependentUpon>DoctorMainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorMedicalRecordsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorMedicalRecordsForm.Designer.cs">
+      <DependentUpon>DoctorMedicalRecordsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorNewMedicalRecordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorNewMedicalRecordForm.Designer.cs">
+      <DependentUpon>DoctorNewMedicalRecordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorPatientsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorPatientsForm.Designer.cs">
+      <DependentUpon>DoctorPatientsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DoctorManagement\DoctorProfileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\NurseManagement\MedicationTrackingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\NurseManagement\MedicationTrackingForm.Designer.cs">
+      <DependentUpon>MedicationTrackingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NurseManagement\NurseMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\NurseManagement\NurseMainForm.Designer.cs">
+      <DependentUpon>NurseMainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NurseManagement\NursingNotesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\NurseManagement\NursingNotesForm.Designer.cs">
+      <DependentUpon>NursingNotesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NurseManagement\VitalSignsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\NurseManagement\VitalSignsForm.Designer.cs">
+      <DependentUpon>VitalSignsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientManagement\PatientAddForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PatientManagement\PatientAddForm.Designer.cs">
+      <DependentUpon>PatientAddForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientManagement\PatientEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PatientManagement\PatientEditForm.Designer.cs">
+      <DependentUpon>PatientEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientManagement\PatientListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PatientManagement\PatientListForm.Designer.cs">
+      <DependentUpon>PatientListForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientManagement\PatientSearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PatientManagement\PatientSearchForm.Designer.cs">
+      <DependentUpon>PatientSearchForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientAppointmentsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientAppointmentsForm.Designer.cs">
+      <DependentUpon>PatientAppointmentsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientMainForm.Designer.cs">
+      <DependentUpon>PatientMainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientMedicalRecordsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientMedicalRecordsForm.Designer.cs">
+      <DependentUpon>PatientMedicalRecordsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientNewAppointmentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientNewAppointmentForm.Designer.cs">
+      <DependentUpon>PatientNewAppointmentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientPortal\PatientProfileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Reports\DailyAppointmentsReportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Reports\DailyAppointmentsReportForm.Designer.cs">
+      <DependentUpon>DailyAppointmentsReportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserManagement\UserForms.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\UserManagement\UserForms.Designer.cs">
+      <DependentUpon>UserForms.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Views\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\PatientManagement\PatientAddForm.resx">
+      <DependentUpon>PatientAddForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\PatientManagement\PatientEditForm.resx">
+      <DependentUpon>PatientEditForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\PatientManagement\PatientSearchForm.resx">
+      <DependentUpon>PatientSearchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManagement\UserForms.resx">
+      <DependentUpon>UserForms.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+    <Error Condition="!Exists('packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
+</Project>
