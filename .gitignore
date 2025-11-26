@@ -1,0 +1,8 @@
+# Visual Studio Gecici Dosyalari
+.vs/
+*.vsidx
+*.suo
+
+# Derleme Ciktilari (C#/.NET projeleri)
+[Bb]in/
+[Oo]bj/
