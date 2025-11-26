@@ -103,8 +103,10 @@
     <Compile Include="Services\PatientService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Tools\DatabaseFixerTool.cs" />
+    <Compile Include="Utilities\AuthorizationHelper.cs" />
     <Compile Include="Utilities\ComboBoxItem.cs" />
     <Compile Include="Utilities\DatabaseTestHelper.cs" />
+    <Compile Include="Utilities\LogHelper.cs" />
     <Compile Include="Utilities\PasswordHelper.cs" />
     <Compile Include="Utilities\SessionManager.cs" />
     <Compile Include="Utilities\UserSettingsHelper.cs" />

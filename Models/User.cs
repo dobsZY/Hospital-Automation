@@ -8,27 +8,26 @@ namespace HospitalAutomation.Models
 {
     public class User : BaseEntity
     {
+        [Key]
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "Kullanýcý adý gereklidir")]
-        [StringLength(50, ErrorMessage = "Kullanýcý adý en fazla 50 karakter olabilir")]
+        [StringLength(100, ErrorMessage = "Kullanýcý adý en fazla 100 karakter olabilir")]
         public string Username { get; set; }
 
         [Required(ErrorMessage = "Þifre gereklidir")]
         public string PasswordHash { get; set; }
 
-        [Required(ErrorMessage = "Ad gereklidir")]
-        [StringLength(50, ErrorMessage = "Ad en fazla 50 karakter olabilir")]
-        public string FirstName { get; set; }
-
-        [Required(ErrorMessage = "Soyad gereklidir")]
-        [StringLength(50, ErrorMessage = "Soyad en fazla 50 karakter olabilir")]
-        public string LastName { get; set; }
-
         [Required(ErrorMessage = "E-mail gereklidir")]
+        [StringLength(200, ErrorMessage = "E-mail en fazla 200 karakter olabilir")]
         [EmailAddress(ErrorMessage = "Geçerli bir e-mail adresi giriniz")]
         public string Email { get; set; }
 
-        [Phone(ErrorMessage = "Geçerli bir telefon numarasý giriniz")]
-        public string Phone { get; set; }
+        [StringLength(100, ErrorMessage = "Ad en fazla 100 karakter olabilir")]
+        public string FirstName { get; set; }
+
+        [StringLength(100, ErrorMessage = "Soyad en fazla 100 karakter olabilir")]
+        public string LastName { get; set; }
 
         [Required(ErrorMessage = "Rol seçimi gereklidir")]
         public UserRole Role { get; set; }

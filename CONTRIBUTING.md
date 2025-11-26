@@ -12,46 +12,27 @@ Bu proje için katký kurallarý, kodlama standartlarý ve proje gereksinimleri bu d
 ## Authentication & Authorization
 - Kullanýcý kayýt, giriþ ve çýkýþ akýþlarý olmalýdýr. Session tabanlý veya token tabanlý (JWT) yaklaþýmlardan birisi kullanýlabilir.
 - Kullanýcý rolleri (Admin, Doctor, Nurse, Receptionist, Patient vb.) tanýmlanmalý ve yetkilendirme kontrolleri uygulanmalýdýr.
-- Yetki kontrolü hem UI seviyesinde hem servis/iþ katmanýnda doðrulanmalýdýr.
+- Yetki kontrolü hem UI seviyesinde hem servis/iç katmanýnda doðrulanmalýdýr.
 
 ## Güvenlik
-- Kullanýcý þifreleri güçlü biçimde saklanmalýdýr: PBKDF2 (Rfc2898DeriveBytes) veya bcrypt/argon2 kullanýlmalýdýr. Sabit salt kullanýlmamalýdýr; kullanýcý baþýna salt oluþturulmalýdýr.
-- 'Beni hatýrla' veya yerel credential saklama için DPAPI / ProtectedData veya iþletim sistemi kimlik depolarý (Windows Credential Manager) kullanýlmalýdýr. Basit XOR/Base64 yöntemleri kabul edilmez.
+- Kullanýcý þifreleri güvenli þekilde saklanmalýdýr: PBKDF2 (Rfc2898DeriveBytes) veya bcrypt/argon2 kullanýlmalýdýr. Sabit salt kullanýlmamalýdýr; kullanýcý baþýna benzersiz salt oluþturulmalýdýr.
+- 'Beni hatýrla' veya yerel credential saklama için DPAPI / ProtectedData veya iþletim sistemi kimlik depolarý (Windows Credential Manager) kullanýlmalýdýr. Basit XOR/Base64 yöntemleri veya sabit anahtar ile þifreleme kabul edilmez.
+- Yerel kayýt alanlarýnda (registry, dosya) tersine çevrilebilir biçimde parola saklanmamalýdýr; yalnýzca token veya OS-backed güvenli saklama kullanýlmalýdýr.
 - Hassas veriler loglara, MessageBox veya hata mesajlarýna düz metin olarak yazýlmamalýdýr.
 
 ## Veritabaný ve Seed
-- Geliþtirme ortamýnda seed verisi eklenebilir fakat production ortamýnda otomatik DB silme/yeniden oluþturma (ör. DropCreateDatabaseAlways) kullanýlmamalýdýr.
-- Migration tabanlý yaklaþýmla schema deðiþiklikleri yönetilmeli; büyük deðiþikliklerde migration scriptleri PR ile gelmelidir.
+- Geliþtirme ortamýnda seed verisi eklenebilir fakat production ortamýnda otomatik DB silme/yeniden oluþturma (örn. DropCreateDatabaseAlways) kullanýlmamalýdýr.
+- Migration tabanlý yaklaþým ile schema deðiþiklikleri yönetilmeli; büyük deðiþikliklerde migration scriptleri PR ile gelmelidir.
 - Eðer LocalDB/SQL Server kullanýlýyorsa `README` veya proje kökünde `sql/` klasöründe veritabaný oluþturma scriptleri bulunmalýdýr.
 
-## Kod Stili ve Formatlama
-- `.editorconfig` dosyasý proje kökünde bulunmalý; kod formatlama ve adlandýrma standartlarý bu dosyada belirtilmelidir.
-- Ýsimlendirme: PascalCase for classes and methods, camelCase for local variables and parameters. Public member names must be clear.
-- Exception yakalama: Genel `catch (Exception)` bloklarý minimal tutulmalý; mümkünse spesifik exception tipi yakalanmalý ve hata loglanmalýdýr.
+## Kod Standartlarý
+- Proje kökünde bir `.editorconfig` dosyasý bulunmalýdýr. Kod formatlama ve stil kurallarý `.editorconfig` ile tanýmlanacaktýr.
 
-## Unit Tests ve QA
-- Kritik servisler ve iþ kurallarý için unit test eklenmelidir (MSTest, NUnit veya xUnit kabul edilir).
-- Beste ciyle çalýþan basit test pipeline önerilir (GitHub Actions).
+## Credential Storage Policy
+- Uygulamada "Beni Hatýrla" davranýþý için registry ya da dosyaya sabit anahtar ile tersine çevrilebilir þifreleme ile kayýt yapýlamaz.
+- Kullanýcý parolalarý veritabanýnda veya sunucuda sadece güçlü hash algoritmalarý (PBKDF2/bcrypt/argon2) ile saklanmalýdýr.
+- Yerel hatýrlama gerekiyorsa Windows DPAPI/ProtectedData veya Windows Credential Manager gibi platform tarafýndan saðlanan güvenli saklama çözümleri kullanýlmalýdýr.
 
-## UI
-- Web projelerinde responsive tasarým (Bootstrap vb.) gereklidir.
-- Masaüstü uygulamalarýnda uzun süren iþlemler UI thread'ini bloklamamalýdýr (async/Task.Run veya BackgroundWorker kullanýmý).
-
-## Logging ve Hata Yönetimi
-- Süreç loglarý ve hatalar kalýcý olarak saklanmalýdýr (örn. Serilog/NLog ile dosya veya konsol). Debug.WriteLine yetersizdir.
-- Kullanýcýya gösterilecek hata mesajlarý kullanýcý dostu olmalýdýr; teknik detaylar loglara yazýlmalýdýr.
-
-## Pull Request & Kod Ýncelemesi
-- Tüm deðiþiklikler feature branch üzerinde olmalýdýr. PR açýklamasý deðiþikliðin ne yaptýðýný ve nedenini anlatmalýdýr.
-- PR'larda kod stiline uymayan satýrlar veya güvenlik açýklarý için review yapýlacaktýr.
-
-## Commit Mesajlarý
-- Kýsa, anlamlý mesajlar kullanýn. Örnek: `feat(auth): add login endpoint`, `fix(db): prevent drop database in production`.
-
-## Geliþtirme Önerileri (Opsiyonel)
-- Stored credentials için Windows DPAPI kullanýmý
-- Parola hash'leri için PBKDF2 kullanýmý
-- Serilog ile dönen loglarýn sabit diske yazýlmasý
-
-## Ýletiþim
-- Proje ile ilgili sorular için issue açýnýz.
+## Diðer
+- Logging / History opsiyonel ama tercih edilir; hassas veri loglanmamalýdýr.
+- Proje teslimi GitHub üzerinden yapýlmalýdýr; public repo linki paylaþýlacaktýr.

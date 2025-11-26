@@ -66,6 +66,12 @@ namespace HospitalAutomation.Data.Repositories
             var user = GetByUsername(username);
             if (user != null && PasswordHelper.VerifyPassword(password, user.PasswordHash))
             {
+                // Eðer eski format kullanýlýyorsa veya düþük iterasyon varsa yeniden hashle ve kaydet
+                if (PasswordHelper.NeedsRehash(user.PasswordHash))
+                {
+                    user.PasswordHash = PasswordHelper.HashPassword(password);
+                    _context.SaveChanges();
+                }
                 return user;
             }
             return null;

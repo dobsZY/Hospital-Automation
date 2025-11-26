@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HospitalAutomation.Data.Interfaces;
 using HospitalAutomation.Models;
 using HospitalAutomation.Services.Interfaces;
+using HospitalAutomation.Utilities;
 
 namespace HospitalAutomation.Services
 {
@@ -22,6 +23,9 @@ namespace HospitalAutomation.Services
                 if (patient == null)
                     throw new ArgumentNullException(nameof(patient), "Hasta bilgileri boþ olamaz");
 
+                // Authorization centralised
+                AuthorizationHelper.EnsureCanCreatePatient();
+
                 // Validate required patient data
                 ValidatePatientData(patient);
 
@@ -33,22 +37,25 @@ namespace HospitalAutomation.Services
                 patient.CreatedDate = DateTime.Now;
                 patient.IsActive = true;
                 if (string.IsNullOrWhiteSpace(patient.CreatedBy))
-                    patient.CreatedBy = "System";
+                    patient.CreatedBy = SessionManager.IsLoggedIn ? SessionManager.GetDisplayName() : "System";
 
                 // Add patient to repository
                 _unitOfWork.Patients.Add(patient);
-                
+
                 // Save changes
                 var result = _unitOfWork.Complete();
                 return result > 0;
             }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                // Log the error for debugging
                 System.Diagnostics.Debug.WriteLine($"CreatePatient Error: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
-                
-                throw new Exception($"Hasta oluþtururlirken hata oluþtu: {ex.Message}", ex);
+
+                throw new Exception($"Hasta oluþturulurken hata oluþtu: {ex.Message}", ex);
             }
         }
 
@@ -59,6 +66,9 @@ namespace HospitalAutomation.Services
                 if (patient == null)
                     throw new ArgumentNullException(nameof(patient), "Hasta bilgileri boþ olamaz");
 
+                // Centralized authorization
+                AuthorizationHelper.EnsureCanModifyPatient(patient.Id);
+
                 // Validate patient data
                 ValidatePatientData(patient);
 
@@ -67,18 +77,22 @@ namespace HospitalAutomation.Services
                     throw new InvalidOperationException("Güncellenecek hasta bulunamadý");
 
                 // Check if national ID is being changed and if it already exists
-                if (existingPatient.NationalId != patient.NationalId && 
+                if (existingPatient.NationalId != patient.NationalId &&
                     _unitOfWork.Patients.IsNationalIdExists(patient.NationalId))
                     throw new InvalidOperationException("Bu TC Kimlik No ile kayýtlý baþka bir hasta bulunmaktadýr");
 
                 // Update patient
                 patient.UpdatedDate = DateTime.Now;
                 if (string.IsNullOrWhiteSpace(patient.UpdatedBy))
-                    patient.UpdatedBy = "System";
+                    patient.UpdatedBy = SessionManager.IsLoggedIn ? SessionManager.GetDisplayName() : "System";
 
                 _unitOfWork.Patients.Update(patient);
                 var result = _unitOfWork.Complete();
                 return result > 0;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -94,6 +108,9 @@ namespace HospitalAutomation.Services
                 if (patientId <= 0)
                     throw new ArgumentException("Geçersiz hasta ID", nameof(patientId));
 
+                // Only Admin hasta silebilir
+                AuthorizationHelper.EnsureAdmin();
+
                 var patient = _unitOfWork.Patients.GetById(patientId);
                 if (patient == null)
                     return false;
@@ -102,6 +119,10 @@ namespace HospitalAutomation.Services
                 _unitOfWork.Patients.Remove(patient);
                 var result = _unitOfWork.Complete();
                 return result > 0;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -146,7 +167,12 @@ namespace HospitalAutomation.Services
         {
             try
             {
+                AuthorizationHelper.EnsureStaff();
                 return _unitOfWork.Patients.GetAll();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -159,10 +185,16 @@ namespace HospitalAutomation.Services
         {
             try
             {
+                AuthorizationHelper.EnsureStaff();
+
                 if (string.IsNullOrWhiteSpace(searchTerm))
                     return GetAllPatients();
 
                 return _unitOfWork.Patients.SearchPatients(searchTerm.Trim());
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

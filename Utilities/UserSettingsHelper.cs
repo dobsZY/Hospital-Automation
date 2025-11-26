@@ -1,6 +1,5 @@
 using System;
-using System.IO;
-using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32;
 
@@ -14,7 +13,7 @@ namespace HospitalAutomation.Utilities
         private const string REMEMBER_VALUE = "RememberMe";
 
         /// <summary>
-        /// Kullanýcý bilgilerini kaydet
+        /// Kullanýcý bilgilerini DPAPI (CryptProtectData) ile þifreleyip registry'de saklar (CurrentUser scope).
         /// </summary>
         public static void SaveUserCredentials(string username, string password, bool remember)
         {
@@ -24,16 +23,13 @@ namespace HospitalAutomation.Utilities
                 {
                     if (remember)
                     {
-                        // Þifreyi þifrele ve kaydet
-                        string encryptedPassword = EncryptString(password);
-                        
-                        key.SetValue(USERNAME_VALUE, username);
-                        key.SetValue(PASSWORD_VALUE, encryptedPassword);
+                        var encrypted = ProtectString(password);
+                        key.SetValue(USERNAME_VALUE, username ?? string.Empty);
+                        key.SetValue(PASSWORD_VALUE, encrypted ?? string.Empty);
                         key.SetValue(REMEMBER_VALUE, "true");
                     }
                     else
                     {
-                        // Kayýtlý bilgileri temizle
                         key.DeleteValue(USERNAME_VALUE, false);
                         key.DeleteValue(PASSWORD_VALUE, false);
                         key.SetValue(REMEMBER_VALUE, "false");
@@ -42,12 +38,12 @@ namespace HospitalAutomation.Utilities
             }
             catch (Exception)
             {
-                // Registry eriþim hatasý durumunda sessizce geç
+                // Registry eriþim veya þifreleme hatasý durumunda sessizce geç.
             }
         }
 
         /// <summary>
-        /// Kayýtlý kullanýcý bilgilerini al
+        /// Kayýtlý kullanýcý bilgilerini geri döner. Baþarýsýzsa boþ döner.
         /// </summary>
         public static (string username, string password, bool remember) GetSavedCredentials()
         {
@@ -58,15 +54,15 @@ namespace HospitalAutomation.Utilities
                     if (key != null)
                     {
                         string remember = key.GetValue(REMEMBER_VALUE, "false").ToString();
-                        
                         if (remember == "true")
                         {
                             string username = key.GetValue(USERNAME_VALUE, "").ToString();
                             string encryptedPassword = key.GetValue(PASSWORD_VALUE, "").ToString();
-                            
+
                             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(encryptedPassword))
                             {
-                                string password = DecryptString(encryptedPassword);
+                                var password = UnprotectString(encryptedPassword);
+                                if (password == null) return ("", "", false);
                                 return (username, password, true);
                             }
                         }
@@ -75,71 +71,169 @@ namespace HospitalAutomation.Utilities
             }
             catch (Exception)
             {
-                // Registry eriþim hatasý durumunda varsayýlan deðerleri döndür
+                // Hata durumunda hassas veri döndürmüyoruz
             }
 
             return ("", "", false);
         }
 
-        /// <summary>
-        /// Kayýtlý bilgileri temizle
-        /// </summary>
         public static void ClearSavedCredentials()
         {
             SaveUserCredentials("", "", false);
         }
 
         /// <summary>
-        /// String þifreleme (basit Base64 + XOR)
+        /// DPAPI ile þifrele (CryptProtectData). Dönen Base64 string.
+        /// P/Invoke kullanýlarak ProtectedData'ya olan baðýmlýlýk kaldýrýldý.
         /// </summary>
-        private static string EncryptString(string text)
+        private static string ProtectString(string text)
         {
             try
             {
-                if (string.IsNullOrEmpty(text))
-                    return text;
-
-                // Basit XOR þifreleme ile Base64 kodlama
-                byte[] data = Encoding.UTF8.GetBytes(text);
-                byte[] key = Encoding.UTF8.GetBytes("HospitalAutomation2024"); // Sabit anahtar
-                
-                for (int i = 0; i < data.Length; i++)
-                {
-                    data[i] = (byte)(data[i] ^ key[i % key.Length]);
-                }
-                
-                return Convert.ToBase64String(data);
+                if (string.IsNullOrEmpty(text)) return string.Empty;
+                var data = Encoding.UTF8.GetBytes(text);
+                var encrypted = CryptProtect(data);
+                return encrypted == null ? null : Convert.ToBase64String(encrypted);
             }
             catch
             {
-                return text; // Þifreleme baþarýsýzsa orijinal metni döndür
+                return null;
             }
         }
 
         /// <summary>
-        /// String þifre çözme (basit Base64 + XOR)
+        /// DPAPI ile çöz (CryptUnprotectData). Baþarýsýzsa null döner.
         /// </summary>
-        private static string DecryptString(string encryptedText)
+        private static string UnprotectString(string protectedBase64)
         {
             try
             {
-                if (string.IsNullOrEmpty(encryptedText))
-                    return encryptedText;
-
-                byte[] data = Convert.FromBase64String(encryptedText);
-                byte[] key = Encoding.UTF8.GetBytes("HospitalAutomation2024"); // Ayný sabit anahtar
-                
-                for (int i = 0; i < data.Length; i++)
-                {
-                    data[i] = (byte)(data[i] ^ key[i % key.Length]);
-                }
-                
-                return Encoding.UTF8.GetString(data);
+                if (string.IsNullOrEmpty(protectedBase64)) return string.Empty;
+                var protectedData = Convert.FromBase64String(protectedBase64);
+                var decrypted = CryptUnprotect(protectedData);
+                return decrypted == null ? null : Encoding.UTF8.GetString(decrypted);
             }
             catch
             {
-                return encryptedText; // Þifre çözme baþarýsýzsa orijinal metni döndür
+                return null;
             }
         }
+
+        #region DPAPI P/Invoke (CryptProtectData / CryptUnprotectData)
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct DATA_BLOB
+        {
+            public int cbData;
+            public IntPtr pbData;
+
+            public DATA_BLOB(byte[] data)
+            {
+                cbData = data?.Length ?? 0;
+                pbData = IntPtr.Zero;
+                if (cbData > 0)
+                {
+                    pbData = Marshal.AllocHGlobal(cbData);
+                    Marshal.Copy(data, 0, pbData, cbData);
+                }
+            }
+
+            public void Free()
+            {
+                if (pbData != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(pbData);
+                    pbData = IntPtr.Zero;
+                }
+                cbData = 0;
+            }
+        }
+
+        [DllImport("crypt32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern bool CryptProtectData(
+            ref DATA_BLOB pDataIn,
+            string pszDataDescr,
+            IntPtr pOptionalEntropy,
+            IntPtr pvReserved,
+            IntPtr pPromptStruct,
+            int dwFlags,
+            out DATA_BLOB pDataOut);
+
+        [DllImport("crypt32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern bool CryptUnprotectData(
+            ref DATA_BLOB pDataIn,
+            StringBuilder ppszDataDescr,
+            IntPtr pOptionalEntropy,
+            IntPtr pvReserved,
+            IntPtr pPromptStruct,
+            int dwFlags,
+            out DATA_BLOB pDataOut);
+
+        private static byte[] CryptProtect(byte[] plainData)
+        {
+            if (plainData == null || plainData.Length == 0) return new byte[0];
+
+            var inBlob = new DATA_BLOB(plainData);
+            try
+            {
+                DATA_BLOB outBlob;
+                bool success = CryptProtectData(ref inBlob, null, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, out outBlob);
+                if (!success || outBlob.cbData == 0)
+                {
+                    // attempt cleanup
+                    outBlob.Free();
+                    return null;
+                }
+
+                try
+                {
+                    var encrypted = new byte[outBlob.cbData];
+                    Marshal.Copy(outBlob.pbData, encrypted, 0, outBlob.cbData);
+                    return encrypted;
+                }
+                finally
+                {
+                    outBlob.Free();
+                }
+            }
+            finally
+            {
+                inBlob.Free();
+            }
+        }
+
+        private static byte[] CryptUnprotect(byte[] encryptedData)
+        {
+            if (encryptedData == null || encryptedData.Length == 0) return new byte[0];
+
+            var inBlob = new DATA_BLOB(encryptedData);
+            try
+            {
+                DATA_BLOB outBlob;
+                bool success = CryptUnprotectData(ref inBlob, null, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, out outBlob);
+                if (!success || outBlob.cbData == 0)
+                {
+                    outBlob.Free();
+                    return null;
+                }
+
+                try
+                {
+                    var decrypted = new byte[outBlob.cbData];
+                    Marshal.Copy(outBlob.pbData, decrypted, 0, outBlob.cbData);
+                    return decrypted;
+                }
+                finally
+                {
+                    outBlob.Free();
+                }
+            }
+            finally
+            {
+                inBlob.Free();
+            }
+        }
+
+        #endregion
     }
 }

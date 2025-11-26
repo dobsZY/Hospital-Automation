@@ -8,28 +8,32 @@ namespace HospitalAutomation.Models
 {
     public class Patient : BaseEntity
     {
+        [Key]
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "TC Kimlik No gereklidir")]
         [StringLength(11, MinimumLength = 11, ErrorMessage = "TC Kimlik No 11 karakter olmalýdýr")]
         public string NationalId { get; set; }
 
         [Required(ErrorMessage = "Ad gereklidir")]
-        [StringLength(50, ErrorMessage = "Ad en fazla 50 karakter olabilir")]
+        [StringLength(100, ErrorMessage = "Ad en fazla 100 karakter olabilir")]
         public string FirstName { get; set; }
 
         [Required(ErrorMessage = "Soyad gereklidir")]
-        [StringLength(50, ErrorMessage = "Soyad en fazla 50 karakter olabilir")]
+        [StringLength(100, ErrorMessage = "Soyad en fazla 100 karakter olabilir")]
         public string LastName { get; set; }
 
-        [Required(ErrorMessage = "Doðum tarihi gereklidir")]
         public DateTime BirthDate { get; set; }
 
         [Required(ErrorMessage = "Cinsiyet seçimi gereklidir")]
         public Gender Gender { get; set; }
 
         [Phone(ErrorMessage = "Geçerli bir telefon numarasý giriniz")]
+        [StringLength(20)]
         public string Phone { get; set; }
 
         [EmailAddress(ErrorMessage = "Geçerli bir e-mail adresi giriniz")]
+        [StringLength(200)]
         public string Email { get; set; }
 
         public string Address { get; set; }

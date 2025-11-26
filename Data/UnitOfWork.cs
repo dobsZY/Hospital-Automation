@@ -1,5 +1,6 @@
 using System;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using HospitalAutomation.Data.Interfaces;
 using HospitalAutomation.Data.Repositories;
 
@@ -67,6 +68,11 @@ namespace HospitalAutomation.Data
             try
             {
                 return _context.SaveChanges();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // EF update hatalarýný ayýrt edip loglayalým
+                throw new Exception("Veritabaný kaydetme iþlemi sýrasýnda veri tabaný hatasý oluþtu.", dbEx);
             }
             catch (Exception ex)
             {

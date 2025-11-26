@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using HospitalAutomation.Data;
 using HospitalAutomation.Models;
 using HospitalAutomation.Utilities;
+using System.IO;
 
 namespace HospitalAutomation.Views.Reports
 {
@@ -148,7 +149,53 @@ namespace HospitalAutomation.Views.Reports
 
         private void BtnPrint_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Yazdýrma özelliði geliþtirilmektedir.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                // CSV export seçeneði sun
+                using (var sfd = new SaveFileDialog())
+                {
+                    sfd.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
+                    sfd.FileName = $"appointments-{dtpReportDate.Value:yyyyMMdd}.csv";
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        ExportGridViewToCsv(dgvAppointments, sfd.FileName);
+                        MessageBox.Show("Rapor CSV olarak kaydedildi.", "Baþarýlý", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"CSV export hatasý: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ExportGridViewToCsv(DataGridView dgv, string path)
+        {
+            using (var sw = new StreamWriter(path, false, System.Text.Encoding.UTF8))
+            {
+                // Baþlýk satýrý
+                var headers = dgv.Columns.Cast<DataGridViewColumn>().Where(c => c.Visible).Select(c => EscapeCsv(c.HeaderText));
+                sw.WriteLine(string.Join(",", headers));
+
+                // Satýrlar
+                foreach (DataGridViewRow row in dgv.Rows)
+                {
+                    if (row.IsNewRow) continue;
+                    var cells = row.Cells.Cast<DataGridViewCell>()
+                                  .Where(c => c.Visible)
+                                  .Select(c => EscapeCsv(c.Value?.ToString() ?? ""));
+                    sw.WriteLine(string.Join(",", cells));
+                }
+            }
+        }
+
+        private string EscapeCsv(string s)
+        {
+            if (s == null) return "";
+            if (s.Contains("\"")) s = s.Replace("\"", "\"\"");
+            if (s.Contains(",") || s.Contains("\n") || s.Contains("\r"))
+                return $"\"{s}\"";
+            return s;
         }
 
         private void BtnExport_Click(object sender, EventArgs e)
