@@ -1,0 +1,147 @@
+@model Appointment
+@{
+    ViewData["Title"] = "Randevu Düzenle";
+}
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h3>Randevu Düzenle</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PatientId" class="form-label">Hasta</label>
+                            <select asp-for="PatientId" class="form-select" asp-items="ViewBag.Patients">
+                                <option value="">Seçiniz</option>
+                            </select>
+                            <span asp-validation-for="PatientId" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DoctorId" class="form-label">Doktor</label>
+                            <select asp-for="DoctorId" class="form-select" asp-items="ViewBag.Doctors">
+                                <option value="">Seçiniz</option>
+                            </select>
+                            <span asp-validation-for="DoctorId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DepartmentId" class="form-label">Bölüm</label>
+                            <select asp-for="DepartmentId" class="form-select" asp-items="ViewBag.Departments">
+                                <option value="">Seçiniz</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AppointmentDate" class="form-label">Randevu Tarihi</label>
+                            <input asp-for="AppointmentDate" class="form-control" type="date" />
+                            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AppointmentTime" class="form-label">Randevu Saati</label>
+                            <select asp-for="AppointmentTime" class="form-select" id="AppointmentTime">
+                                <option value="">Seçiniz</option>
+                            </select>
+                            <span asp-validation-for="AppointmentTime" class="text-danger"></span>
+                            <small class="form-text text-muted">Doktor ve tarih seçtikten sonra müsait saatler görünecektir.</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label">Durum</label>
+                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<AppointmentStatus>()" class="form-select"></select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label">Notlar</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Symptoms" class="form-label">Semptomlar</label>
+                        <textarea asp-for="Symptoms" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Load available time slots for current doctor and date
+            var currentDoctorId = $('#DoctorId').val();
+            var currentDate = $('#AppointmentDate').val();
+            @{
+                var hours = Model.AppointmentTime.Hours.ToString("00");
+                var minutes = Model.AppointmentTime.Minutes.ToString("00");
+                var currentTimeStr = $"{hours}:{minutes}";
+            }
+            var currentTime = '@currentTimeStr';
+            
+            if (currentDoctorId && currentDate) {
+                loadAvailableTimeSlots(currentTime);
+            }
+            
+            $('#DoctorId, #AppointmentDate').change(function() {
+                loadAvailableTimeSlots();
+            });
+            
+            function loadAvailableTimeSlots(selectedTime) {
+                var doctorId = $('#DoctorId').val();
+                var date = $('#AppointmentDate').val();
+                var timeSelect = $('#AppointmentTime');
+                
+                timeSelect.empty();
+                timeSelect.append('<option value="">Seçiniz</option>');
+                
+                if (doctorId && date) {
+                    $.ajax({
+                        url: '@Url.Action("GetAvailableTimeSlots", "Appointment")',
+                        type: 'GET',
+                        data: { 
+                            doctorId: doctorId, 
+                            date: date 
+                        },
+                        success: function(timeSlots) {
+                            if (timeSlots && timeSlots.length > 0) {
+                                $.each(timeSlots, function(i, timeSlot) {
+                                    var option = $('<option></option>').val(timeSlot).text(timeSlot);
+                                    if (selectedTime && timeSlot === selectedTime) {
+                                        option.attr('selected', 'selected');
+                                    }
+                                    timeSelect.append(option);
+                                });
+                            } else {
+                                timeSelect.append($('<option></option>').text('Müsait saat bulunamadı').attr('disabled', true));
+                            }
+                        },
+                        error: function() {
+                            alert('Müsait saatler yüklenirken bir hata oluştu.');
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+}
+

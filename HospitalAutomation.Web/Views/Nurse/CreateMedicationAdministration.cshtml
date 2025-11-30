@@ -1,0 +1,97 @@
+@model HospitalAutomation.Models.MedicationAdministration
+@using HospitalAutomation.Models
+
+@{
+    ViewData["Title"] = "İlaç Planla";
+    var patients = ViewBag.Patients as List<Patient>;
+    var medications = ViewBag.Medications as List<Medication>;
+    var doctors = ViewBag.Doctors as List<User>;
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-capsule me-2"></i>İlaç Uygulaması Planla</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateMedicationAdministration" method="post">
+                        <input type="hidden" asp-for="NurseId" />
+                        
+                        <div class="mb-4">
+                            <label asp-for="PatientId" class="form-label fw-bold">Hasta Seçimi</label>
+                            <select asp-for="PatientId" class="form-select form-select-lg" required>
+                                <option value="">-- Hasta Seçiniz --</option>
+                                @if (patients != null)
+                                {
+                                    foreach (var p in patients)
+                                    {
+                                        <option value="@p.Id">@p.FullName (@p.NationalId)</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="PatientId" class="text-danger"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="MedicationId" class="form-label">İlaç</label>
+                                <select asp-for="MedicationId" class="form-select" required>
+                                    <option value="">-- Seçiniz --</option>
+                                    @if (medications != null)
+                                    {
+                                        foreach (var m in medications)
+                                        {
+                                            <option value="@m.Id">@m.Name (@m.Unit)</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="MedicationId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Dosage" class="form-label">Dozaj</label>
+                                <input asp-for="Dosage" class="form-control" placeholder="Örn: 1 tablet, 50mg" required />
+                                <span asp-validation-for="Dosage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DoctorId" class="form-label">Talep Eden Doktor</label>
+                                <select asp-for="DoctorId" class="form-select" required>
+                                    <option value="">-- Seçiniz --</option>
+                                    @if (doctors != null)
+                                    {
+                                        foreach (var d in doctors)
+                                        {
+                                            <option value="@d.Id">Dr. @d.FullName</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="DoctorId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ScheduledDateTime" class="form-label">Uygulama Zamanı</label>
+                                <input asp-for="ScheduledDateTime" class="form-control" type="datetime-local" required />
+                                <span asp-validation-for="ScheduledDateTime" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label fw-bold">Notlar</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="MedicationTracking" class="btn btn-light btn-lg px-4">İptal</a>
+                            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">Planla</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

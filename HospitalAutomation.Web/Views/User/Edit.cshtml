@@ -1,0 +1,122 @@
+@model HospitalAutomation.Models.User
+@using HospitalAutomation.Models.Enums
+@using HospitalAutomation.Models
+
+@{
+    ViewData["Title"] = "Kullanıcı Düzenle";
+    var departments = ViewBag.Departments as List<Department>;
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-warning bg-gradient text-dark py-3">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Kullanıcı Düzenle</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="PasswordHash" />
+                        <input type="hidden" asp-for="CreatedDate" />
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label">Ad</label>
+                                <input asp-for="FirstName" class="form-control" required />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label">Soyad</label>
+                                <input asp-for="LastName" class="form-control" required />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label">E-mail</label>
+                                <input asp-for="Email" class="form-control" type="email" required />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Username" class="form-label">Kullanıcı Adı</label>
+                                <input asp-for="Username" class="form-control" required readonly />
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <h5 class="text-secondary border-bottom pb-2 mb-3">Rol ve Yetkiler</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Role" class="form-label">Kullanıcı Rolü</label>
+                                <select asp-for="Role" class="form-select" asp-items="Html.GetEnumSelectList<UserRole>()" id="roleSelect">
+                                    <option value="">-- Seçiniz --</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6" id="departmentDiv">
+                                <label asp-for="DepartmentId" class="form-label">Bölüm</label>
+                                <select asp-for="DepartmentId" class="form-select">
+                                    <option value="">-- Seçiniz --</option>
+                                    @if (departments != null)
+                                    {
+                                        foreach (var dept in departments)
+                                        {
+                                            <option value="@dept.Id">@dept.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-12 form-check ms-3">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsActive" class="form-check-label">Aktif Kullanıcı</label>
+                            </div>
+                        </div>
+
+                        <div id="doctorFields" class="@(Model.Role == UserRole.Doctor ? "" : "d-none")">
+                            <h5 class="text-secondary border-bottom pb-2 mb-3">Doktor Bilgileri</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label asp-for="MedicalLicenseNumber" class="form-label">Lisans No</label>
+                                    <input asp-for="MedicalLicenseNumber" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Specialization" class="form-label">Uzmanlık Alanı</label>
+                                    <input asp-for="Specialization" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="ExperienceYears" class="form-label">Deneyim (Yıl)</label>
+                                    <input asp-for="ExperienceYears" class="form-control" type="number" />
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Education" class="form-label">Eğitim</label>
+                                    <textarea asp-for="Education" class="form-control" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-light btn-lg px-4">İptal</a>
+                            <button type="submit" class="btn btn-warning btn-lg px-5 shadow-sm">Güncelle</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            $('#roleSelect').change(function() {
+                var role = $(this).find("option:selected").text();
+                if (role === 'Doctor') {
+                    $('#doctorFields').removeClass('d-none');
+                } else {
+                    $('#doctorFields').addClass('d-none');
+                }
+            });
+        });
+    </script>
+}
+

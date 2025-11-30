@@ -1,0 +1,268 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Hastane Otomasyon Sistemi</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HospitalAutomation.Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="wrapper">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <h3 class="sidebar-brand">
+                        <i class="bi bi-hospital"></i>
+                        <span>Hastane Otomasyon</span>
+                    </h3>
+                </div>
+                <ul class="sidebar-menu">
+                    @if (SessionManager.IsAdmin || SessionManager.IsReceptionist)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Patient" asp-action="Index">
+                                <i class="bi bi-people"></i>
+                                <span>Hasta Yönetimi</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Patient" asp-action="Create">
+                                <i class="bi bi-person-plus"></i>
+                                <span>Yeni Hasta</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Appointment" asp-action="Index">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Randevu Yönetimi</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Appointment" asp-action="Create">
+                                <i class="bi bi-calendar-plus"></i>
+                                <span>Yeni Randevu</span>
+                            </a>
+                        </li>
+                        @if (SessionManager.IsAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="User" asp-action="Index">
+                                    <i class="bi bi-person-gear"></i>
+                                    <span>Kullanıcı Yönetimi</span>
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Report" asp-action="DailyAppointments">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Raporlar</span>
+                            </a>
+                        </li>
+                    }
+                    else if (SessionManager.IsDoctor)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Doctor" asp-action="Index">
+                                <i class="bi bi-house-door"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Doctor" asp-action="Appointments">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Randevularım</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Doctor" asp-action="Patients">
+                                <i class="bi bi-people"></i>
+                                <span>Hastalarım</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Doctor" asp-action="MedicalRecords">
+                                <i class="bi bi-file-medical"></i>
+                                <span>Tıbbi Kayıtlar</span>
+                            </a>
+                        </li>
+                    }
+                    else if (SessionManager.IsNurse)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Nurse" asp-action="Index">
+                                <i class="bi bi-house-door"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Nurse" asp-action="VitalSigns">
+                                <i class="bi bi-heart-pulse"></i>
+                                <span>Vital Bulgular</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Nurse" asp-action="MedicationTracking">
+                                <i class="bi bi-capsule"></i>
+                                <span>İlaç Takibi</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Nurse" asp-action="NursingNotes">
+                                <i class="bi bi-journal-text"></i>
+                                <span>Hemşire Notları</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Nurse" asp-action="Patients">
+                                <i class="bi bi-people"></i>
+                                <span>Hastalar</span>
+                            </a>
+                        </li>
+                    }
+                    else if (SessionManager.IsPatientLogin)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="PatientPortal" asp-action="Index">
+                                <i class="bi bi-house-door"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="PatientPortal" asp-action="Appointments">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Randevularım</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="PatientPortal" asp-action="MedicalRecords">
+                                <i class="bi bi-file-medical"></i>
+                                <span>Tıbbi Kayıtlarım</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Top Navbar -->
+                <nav class="top-navbar">
+                    <div class="navbar-content">
+                        <button class="sidebar-toggle" id="sidebarToggle">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <div class="navbar-right">
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="user-details">
+                                    <span class="user-name">@SessionManager.GetDisplayName()</span>
+                                    <span class="user-role">@SessionManager.GetUserType()</span>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="bi bi-person"></i> Profilim</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword"><i class="bi bi-key"></i> Şifre Değiştir</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Page Content -->
+                <div class="content-wrapper">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Public Layout (Login/Register) -->
+        <header class="public-header">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+                <div class="container">
+                    <a class="navbar-brand fw-bold" asp-controller="Account" asp-action="Login">
+                        <i class="bi bi-hospital text-primary"></i>
+                        <span class="ms-2">Hastane Otomasyon Sistemi</span>
+                    </a>
+                    <div class="navbar-nav ms-auto">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                        <a class="nav-link" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <main class="public-main">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="container mt-3">
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="bi bi-check-circle me-2"></i>
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="container mt-3">
+                    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            }
+            @RenderBody()
+        </main>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

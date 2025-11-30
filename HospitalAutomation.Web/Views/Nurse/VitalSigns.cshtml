@@ -1,0 +1,82 @@
+@model IEnumerable<HospitalAutomation.Models.VitalSigns>
+
+@{
+    ViewData["Title"] = "Vital Bulgular";
+    var patientId = ViewBag.PatientId as int?;
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary mb-0">
+            <i class="bi bi-heart-pulse me-2"></i>Vital Bulgular
+            @if (patientId.HasValue)
+            {
+                <span class="text-muted fs-6 ms-2">(@Model.FirstOrDefault()?.Patient?.FullName için)</span>
+            }
+        </h4>
+        <a asp-action="CreateVitalSigns" asp-route-patientId="@patientId" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Yeni Ölçüm
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 py-3 ps-4">Tarih/Saat</th>
+                                @if (!patientId.HasValue)
+                                {
+                                    <th class="border-0 py-3">Hasta</th>
+                                }
+                                <th class="border-0 py-3">Ateş</th>
+                                <th class="border-0 py-3">Nabız</th>
+                                <th class="border-0 py-3">Tansiyon</th>
+                                <th class="border-0 py-3">Solunum</th>
+                                <th class="border-0 py-3">SpO2</th>
+                                <th class="border-0 py-3">Notlar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">@item.MeasurementDateTime.ToString("dd.MM.yyyy HH:mm")</td>
+                                    @if (!patientId.HasValue)
+                                    {
+                                        <td>
+                                            <a asp-action="VitalSigns" asp-route-patientId="@item.PatientId" class="text-decoration-none fw-bold">
+                                                @item.Patient?.FullName
+                                            </a>
+                                        </td>
+                                    }
+                                    <td>
+                                        <span class="badge @(item.Temperature >= 38 ? "bg-danger" : "bg-success")">
+                                            @item.Temperature °C
+                                        </span>
+                                    </td>
+                                    <td>@item.HeartRate /dk</td>
+                                    <td>@item.BloodPressure mmHg</td>
+                                    <td>@item.RespiratoryRate /dk</td>
+                                    <td>@item.OxygenSaturation %</td>
+                                    <td><small class="text-muted">@item.Notes</small></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-clipboard-pulse display-1 text-muted opacity-25 mb-3"></i>
+                    <h4 class="text-muted">Kayıtlı ölçüm bulunmamaktadır.</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

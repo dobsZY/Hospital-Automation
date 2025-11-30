@@ -1,0 +1,87 @@
+@model HospitalAutomation.Models.User
+@using HospitalAutomation.Models.Enums
+
+@{
+    ViewData["Title"] = "Kullanıcı Detayları";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-person-vcard me-2"></i>Kullanıcı Detayları</h4>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning text-dark">
+                            <i class="bi bi-pencil me-2"></i>Düzenle
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+                            <i class="bi bi-arrow-left me-2"></i>Geri Dön
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4 align-items-center">
+                        <div class="col-auto">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center display-4" style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h3 class="fw-bold mb-0">@Model.FullName</h3>
+                            <p class="text-muted mb-0">@Model.Username</p>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge fs-6 @(Model.IsActive ? "bg-success" : "bg-danger")">
+                                @(Model.IsActive ? "Aktif" : "Pasif")
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Rol</label>
+                            <p class="fw-bold fs-5 border-bottom pb-2">@Model.Role</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Bölüm</label>
+                            <p class="fw-bold fs-5 border-bottom pb-2">@(Model.Department?.Name ?? "-")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">E-mail</label>
+                            <p class="fw-bold fs-5 border-bottom pb-2">@Model.Email</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Kayıt Tarihi</label>
+                            <p class="fw-bold fs-5 border-bottom pb-2">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</p>
+                        </div>
+                    </div>
+
+                    @if (Model.Role == UserRole.Doctor)
+                    {
+                        <h5 class="text-secondary border-bottom pb-2 mb-3">Doktor Bilgileri</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Uzmanlık</label>
+                                <p class="fw-bold">@(Model.Specialization ?? "-")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Lisans No</label>
+                                <p class="fw-bold">@(Model.MedicalLicenseNumber ?? "-")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Deneyim</label>
+                                <p class="fw-bold">@(Model.ExperienceYears) Yıl</p>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Eğitim</label>
+                                <p class="fw-bold bg-light p-3 rounded">@(Model.Education ?? "-")</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

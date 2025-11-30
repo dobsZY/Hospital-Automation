@@ -10,13 +10,13 @@ namespace HospitalAutomation.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Hasta seçimi gereklidir")]
+        [Required(ErrorMessage = "Hasta seï¿½imi gereklidir")]
         public int PatientId { get; set; }
 
         [ForeignKey("PatientId")]
         public virtual Patient Patient { get; set; }
 
-        [Required(ErrorMessage = "Doktor seçimi gereklidir")]
+        [Required(ErrorMessage = "Doktor seï¿½imi gereklidir")]
         public int DoctorId { get; set; }
 
         [ForeignKey("DoctorId")]
@@ -36,6 +36,9 @@ namespace HospitalAutomation.Models
         public string Symptoms { get; set; }
 
         public DateTime? CompletedDate { get; set; }
+
+        // Department foreign key
+        public int? DepartmentId { get; set; }
 
         // Navigation Properties
         [ForeignKey("DepartmentId")]

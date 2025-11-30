@@ -1,0 +1,203 @@
+@model Patient
+@{
+    ViewData["Title"] = "Yeni Hasta Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-5">
+                <h4 class="card-title fw-bold mb-4 text-dark border-bottom pb-3">Yeni Hasta Kayıt Formu</h4>
+                
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 shadow-sm mb-4"></div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="NationalId" class="form-control" maxlength="11" placeholder="TC Kimlik No" />
+                                <label asp-for="NationalId">TC Kimlik No</label>
+                                <span asp-validation-for="NationalId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="BirthDate" class="form-control" type="date" placeholder="Doğum Tarihi" />
+                                <label asp-for="BirthDate">Doğum Tarihi</label>
+                                <span asp-validation-for="BirthDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="FirstName" class="form-control" placeholder="Ad" />
+                                <label asp-for="FirstName">Ad</label>
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="LastName" class="form-control" placeholder="Soyad" />
+                                <label asp-for="LastName">Soyad</label>
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()" class="form-select">
+                                    <option value="">Seçiniz</option>
+                                </select>
+                                <label asp-for="Gender">Cinsiyet</label>
+                                <span asp-validation-for="Gender" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select asp-for="BloodType" asp-items="Html.GetEnumSelectList<BloodType>()" class="form-select">
+                                    <option value="">Seçiniz</option>
+                                </select>
+                                <label asp-for="BloodType">Kan Grubu</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="Phone" class="form-control" placeholder="Telefon" />
+                                <label asp-for="Phone">Telefon</label>
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="Email" class="form-control" type="email" placeholder="E-posta" />
+                                <label asp-for="Email">E-posta</label>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <textarea asp-for="Address" class="form-control" style="height: 100px" placeholder="Adres"></textarea>
+                        <label asp-for="Address">Adres</label>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select asp-for="CityId" class="form-select" asp-items="ViewBag.Cities" id="CityId">
+                                    <option value="">Seçiniz</option>
+                                </select>
+                                <label asp-for="CityId">Şehir</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select asp-for="DistrictId" class="form-select" asp-items="ViewBag.Districts" id="DistrictId">
+                                    <option value="">Seçiniz</option>
+                                </select>
+                                <label asp-for="DistrictId">İlçe</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3 text-primary fw-bold">Acil Durum Bilgileri</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="EmergencyContactName" class="form-control" placeholder="Yakın Adı" />
+                                <label asp-for="EmergencyContactName">Yakın Adı</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="EmergencyContactPhone" class="form-control" placeholder="Yakın Telefonu" />
+                                <label asp-for="EmergencyContactPhone">Yakın Telefonu</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3 text-primary fw-bold">Tıbbi Bilgiler</h5>
+                    <div class="mb-3">
+                        <label asp-for="MedicalHistory" class="form-label fw-semibold text-muted small">Tıbbi Geçmiş</label>
+                        <textarea asp-for="MedicalHistory" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Allergies" class="form-label fw-semibold text-muted small">Alerjiler</label>
+                        <textarea asp-for="Allergies" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="Medications" class="form-label fw-semibold text-muted small">Kullandığı İlaçlar</label>
+                            <textarea asp-for="Medications" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="col-md-4">
+                             <div class="form-floating mb-3">
+                                <input asp-for="Insurance" class="form-control" placeholder="Sigorta" />
+                                <label asp-for="Insurance">Sigorta</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                             <div class="form-floating mb-3">
+                                <input asp-for="Occupation" class="form-control" placeholder="Meslek" />
+                                <label asp-for="Occupation">Meslek</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a asp-action="Index" class="btn btn-light px-4 border">İptal</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            $('#CityId').change(function() {
+                var cityId = $(this).val();
+                var districtSelect = $('#DistrictId');
+                
+                districtSelect.empty();
+                districtSelect.append('<option value="">Seçiniz</option>');
+                
+                if (cityId) {
+                    $.ajax({
+                        url: '@Url.Action("GetDistrictsByCity", "Patient")',
+                        type: 'GET',
+                        data: { cityId: cityId },
+                        success: function(districts) {
+                            $.each(districts, function(i, district) {
+                                districtSelect.append($('<option></option>').val(district.id).text(district.name));
+                            });
+                        },
+                        error: function() {
+                            alert('İlçeler yüklenirken bir hata oluştu.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

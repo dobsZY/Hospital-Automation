@@ -1,0 +1,60 @@
+@model IEnumerable<HospitalAutomation.Models.NursingNote>
+
+@{
+    ViewData["Title"] = "Hemşire Notları";
+    var patientId = ViewBag.PatientId as int?;
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary mb-0">
+            <i class="bi bi-journal-text me-2"></i>Hemşire Notları
+            @if (patientId.HasValue)
+            {
+                <span class="text-muted fs-6 ms-2">(@Model.FirstOrDefault()?.Patient?.FullName için)</span>
+            }
+        </h4>
+        <a asp-action="CreateNursingNote" asp-route-patientId="@patientId" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Not Ekle
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="list-group list-group-flush">
+                    @foreach (var item in Model)
+                    {
+                        <div class="list-group-item p-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="bi bi-clock me-1"></i>@item.NoteDateTime.ToString("dd.MM.yyyy HH:mm")
+                                    </span>
+                                    @if (!patientId.HasValue)
+                                    {
+                                        <span class="text-muted mx-2">|</span>
+                                        <a asp-action="NursingNotes" asp-route-patientId="@item.PatientId" class="text-decoration-none fw-bold text-dark">
+                                            @item.Patient?.FullName
+                                        </a>
+                                    }
+                                </div>
+                                <small class="text-muted">Hemşire: @item.Nurse?.FullName</small>
+                            </div>
+                            <p class="mb-0 lead fs-6">@item.Content</p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-journal-x display-1 text-muted opacity-25 mb-3"></i>
+                    <h4 class="text-muted">Kayıtlı not bulunmamaktadır.</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,99 @@
+@model IEnumerable<HospitalAutomation.Models.MedicalRecord>
+
+@{
+    ViewData["Title"] = "Tıbbi Kayıtlar";
+    var patientId = ViewBag.PatientId as int?;
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary mb-0">
+            <i class="bi bi-journal-medical me-2"></i>Tıbbi Kayıtlar
+            @if (patientId.HasValue)
+            {
+                <span class="text-muted fs-6 ms-2">(@Model.FirstOrDefault()?.Patient?.FullName için)</span>
+            }
+        </h4>
+        <a asp-action="CreateMedicalRecord" asp-route-patientId="@patientId" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Yeni Kayıt Ekle
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="list-group list-group-flush">
+                    @foreach (var record in Model)
+                    {
+                        <div class="list-group-item p-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <h5 class="fw-bold mb-0">@record.Diagnosis</h5>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-calendar3 me-1"></i>@record.RecordDate.ToString("dd MMMM yyyy HH:mm")
+                                        </span>
+                                    </div>
+                                    @if (!patientId.HasValue)
+                                    {
+                                        <p class="text-muted mb-0 small">
+                                            <i class="bi bi-person me-1"></i>Hasta: <strong>@record.Patient?.FullName</strong>
+                                        </p>
+                                    }
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2"></i>Yazdır</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Düzenle</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-light rounded h-100">
+                                        <strong class="d-block text-secondary small text-uppercase mb-2">Şikayetler</strong>
+                                        <p class="mb-0">@record.Symptoms</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-light rounded h-100">
+                                        <strong class="d-block text-secondary small text-uppercase mb-2">Tanı ve Tedavi</strong>
+                                        <p class="mb-0">@record.Treatment</p>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(record.Prescription))
+                                {
+                                    <div class="col-12">
+                                        <div class="p-3 border border-success bg-success bg-opacity-10 rounded">
+                                            <strong class="d-block text-success small text-uppercase mb-2"><i class="bi bi-prescription me-1"></i>Reçete</strong>
+                                            <p class="mb-0 font-monospace">@record.Prescription</p>
+                                        </div>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(record.Notes))
+                                {
+                                    <div class="col-12">
+                                        <p class="mb-0 text-muted small"><i class="bi bi-sticky me-1"></i>Not: @record.Notes</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-folder2-open display-1 text-muted opacity-25 mb-3"></i>
+                    <h4 class="text-muted">Kayıt bulunamadı.</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

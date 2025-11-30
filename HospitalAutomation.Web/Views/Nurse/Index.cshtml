@@ -1,0 +1,125 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Hemşire Paneli";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 bg-white">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h2 class="fw-bold text-primary mb-1">Merhaba, @ViewBag.UserName</h2>
+                            <p class="text-muted mb-0">Günlük görevleriniz ve hasta takibi.</p>
+                        </div>
+                        <div class="d-flex gap-4 text-end">
+                            <div>
+                                <h1 class="display-4 fw-bold text-primary mb-0">@ViewBag.TodayVitalSignsCount</h1>
+                                <span class="text-muted text-uppercase small ls-1">Bugünkü Ölçümler</span>
+                            </div>
+                            <div>
+                                <h1 class="display-4 fw-bold text-success mb-0">@ViewBag.TodayMedicationsCount</h1>
+                                <span class="text-muted text-uppercase small ls-1">Uygulanan İlaçlar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold text-primary">
+                        <i class="bi bi-lightning-charge me-2"></i>Hızlı İşlemler
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a asp-action="CreateVitalSigns" class="btn btn-primary btn-lg text-start">
+                            <i class="bi bi-heart-pulse me-2"></i> Vital Bulgu Gir
+                        </a>
+                        <a asp-action="CreateMedicationAdministration" class="btn btn-outline-primary btn-lg text-start">
+                            <i class="bi bi-capsule me-2"></i> İlaç Planla
+                        </a>
+                        <a asp-action="CreateNursingNote" class="btn btn-outline-primary btn-lg text-start">
+                            <i class="bi bi-journal-plus me-2"></i> Hemşire Notu Ekle
+                        </a>
+                        <a asp-action="Patients" class="btn btn-outline-secondary btn-lg text-start">
+                            <i class="bi bi-people me-2"></i> Hasta Listesi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="col-lg-8">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 border-0 hover-shadow transition-all">
+                        <div class="card-body p-4 text-center">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-3">
+                                <i class="bi bi-activity display-4"></i>
+                            </div>
+                            <h4 class="fw-bold">Vital Bulgular</h4>
+                            <p class="text-muted">Hastaların ateş, nabız, tansiyon takibi.</p>
+                            <a asp-action="VitalSigns" class="btn btn-outline-primary stretched-link">Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 border-0 hover-shadow transition-all">
+                        <div class="card-body p-4 text-center">
+                            <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 d-inline-block mb-3">
+                                <i class="bi bi-capsule display-4"></i>
+                            </div>
+                            <h4 class="fw-bold">İlaç Takibi</h4>
+                            <p class="text-muted">İlaç uygulama ve planlama işlemleri.</p>
+                            <a asp-action="MedicationTracking" class="btn btn-outline-success stretched-link">Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 border-0 hover-shadow transition-all">
+                        <div class="card-body p-4 text-center">
+                            <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 d-inline-block mb-3">
+                                <i class="bi bi-journal-text display-4"></i>
+                            </div>
+                            <h4 class="fw-bold">Hemşire Notları</h4>
+                            <p class="text-muted">Hasta gözlem ve takip notları.</p>
+                            <a asp-action="NursingNotes" class="btn btn-outline-info stretched-link">Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 border-0 hover-shadow transition-all">
+                        <div class="card-body p-4 text-center">
+                            <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle p-3 d-inline-block mb-3">
+                                <i class="bi bi-person-badge display-4"></i>
+                            </div>
+                            <h4 class="fw-bold">Profilim</h4>
+                            <p class="text-muted">Kişisel bilgilerinizi güncelleyin.</p>
+                            <a asp-action="Profile" class="btn btn-outline-secondary stretched-link">Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+    .transition-all {
+        transition: all .3s ease;
+    }
+</style>
+

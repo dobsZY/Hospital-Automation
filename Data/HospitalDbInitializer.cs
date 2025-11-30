@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Data.Entity;
 using System.Linq;
 using HospitalAutomation.Models;
@@ -18,7 +18,7 @@ namespace HospitalAutomation.Data
                 {
                     new City 
                     { 
-                        Name = "Ýstanbul", 
+                        Name = "Ä°stanbul", 
                         Code = "34", 
                         Region = "Marmara",
                         CreatedDate = DateTime.Now,
@@ -29,14 +29,14 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Ankara", 
                         Code = "06", 
-                        Region = "Ýç Anadolu",
+                        Region = "Ä°Ã§ Anadolu",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
                     },
                     new City 
                     { 
-                        Name = "Ýzmir", 
+                        Name = "Ä°zmir", 
                         Code = "35", 
                         Region = "Ege",
                         CreatedDate = DateTime.Now,
@@ -52,19 +52,19 @@ namespace HospitalAutomation.Data
                 context.SaveChanges();
 
                 // Add sample districts
-                var istanbul = context.Cities.FirstOrDefault(c => c.Name == "Ýstanbul");
+                var istanbul = context.Cities.FirstOrDefault(c => c.Name == "Ä°stanbul");
                 var ankara = context.Cities.FirstOrDefault(c => c.Name == "Ankara");
-                var izmir = context.Cities.FirstOrDefault(c => c.Name == "Ýzmir");
+                var izmir = context.Cities.FirstOrDefault(c => c.Name == "Ä°zmir");
 
                 var districts = new[]
                 {
-                    new District { Name = "Kadýköy", CityId = istanbul.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
-                    new District { Name = "Beþiktaþ", CityId = istanbul.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
-                    new District { Name = "Þiþli", CityId = istanbul.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
-                    new District { Name = "Çankaya", CityId = ankara.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
-                    new District { Name = "Keçiören", CityId = ankara.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
+                    new District { Name = "KadÄ±kÃ¶y", CityId = istanbul.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
+                    new District { Name = "BeÅŸiktaÅŸ", CityId = istanbul.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
+                    new District { Name = "ÅžiÅŸli", CityId = istanbul.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
+                    new District { Name = "Ã‡ankaya", CityId = ankara.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
+                    new District { Name = "KeÃ§iÃ¶ren", CityId = ankara.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
                     new District { Name = "Konak", CityId = izmir.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true },
-                    new District { Name = "Karþýyaka", CityId = izmir.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true }
+                    new District { Name = "KarÅŸÄ±yaka", CityId = izmir.Id, CreatedDate = DateTime.Now, CreatedBy = "System", IsActive = true }
                 };
 
                 foreach (var district in districts)
@@ -80,16 +80,16 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Kardiyoloji", 
                         Code = "CARD", 
-                        Description = "Kalp ve damar hastalýklarý",
+                        Description = "Kalp ve damar hastalÄ±klarÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
                     },
                     new Department 
                     { 
-                        Name = "Nöroloji", 
+                        Name = "NÃ¶roloji", 
                         Code = "NEUR", 
-                        Description = "Sinir sistemi hastalýklarý",
+                        Description = "Sinir sistemi hastalÄ±klarÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -98,7 +98,7 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Ortopedi", 
                         Code = "ORTH", 
-                        Description = "Kemik ve kas hastalýklarý",
+                        Description = "Kemik ve kas hastalÄ±klarÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -107,34 +107,34 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Dahiliye", 
                         Code = "INT", 
-                        Description = "Ýç hastalýklarý",
+                        Description = "Ä°Ã§ hastalÄ±klarÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
                     },
                     new Department 
                     { 
-                        Name = "Göz Hastalýklarý", 
+                        Name = "GÃ¶z HastalÄ±klarÄ±", 
                         Code = "EYE", 
-                        Description = "Göz ile ilgili hastalýklar",
+                        Description = "GÃ¶z ile ilgili hastalÄ±klar",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
                     },
                     new Department 
                     { 
-                        Name = "Kulak Burun Boðaz", 
+                        Name = "Kulak Burun BoÄŸaz", 
                         Code = "ENT", 
-                        Description = "KBB ile ilgili hastalýklar",
+                        Description = "KBB ile ilgili hastalÄ±klar",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
                     },
                     new Department 
                     { 
-                        Name = "Üroloji", 
+                        Name = "Ãœroloji", 
                         Code = "URO", 
-                        Description = "Ýdrar yollarý ve erkek üreme sistemi hastalýklarý",
+                        Description = "Ä°drar yollarÄ± ve erkek Ã¼reme sistemi hastalÄ±klarÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -143,16 +143,16 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Jinekolog", 
                         Code = "GYN", 
-                        Description = "Kadýn hastalýklarý ve doðum",
+                        Description = "KadÄ±n hastalÄ±klarÄ± ve doÄŸum",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
                     },
                     new Department 
                     { 
-                        Name = "Çocuk Hastalýklarý", 
+                        Name = "Ã‡ocuk HastalÄ±klarÄ±", 
                         Code = "PED", 
-                        Description = "Çocuklarda görülen hastalýklar",
+                        Description = "Ã‡ocuklarda gÃ¶rÃ¼len hastalÄ±klar",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -161,7 +161,7 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Genel Cerrahi", 
                         Code = "SURG", 
-                        Description = "Genel cerrahi iþlemler",
+                        Description = "Genel cerrahi iÅŸlemler",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -170,7 +170,7 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Dermatoloji", 
                         Code = "DERM", 
-                        Description = "Cilt hastalýklarý",
+                        Description = "Cilt hastalÄ±klarÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -179,7 +179,7 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Psikiyatri", 
                         Code = "PSY", 
-                        Description = "Ruh saðlýðý ve hastalýklarý",
+                        Description = "Ruh saÄŸlÄ±ÄŸÄ± ve hastalÄ±klarÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -188,16 +188,16 @@ namespace HospitalAutomation.Data
                     { 
                         Name = "Radyoloji", 
                         Code = "RAD", 
-                        Description = "Görüntüleme teþhis yöntemleri",
+                        Description = "GÃ¶rÃ¼ntÃ¼leme teÅŸhis yÃ¶ntemleri",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
                     },
                     new Department 
                     { 
-                        Name = "Acil Týp", 
+                        Name = "Acil TÄ±p", 
                         Code = "EMER", 
-                        Description = "Acil durum týbbi müdahaleler",
+                        Description = "Acil durum tÄ±bbi mÃ¼dahaleler",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -238,9 +238,8 @@ namespace HospitalAutomation.Data
                     Username = "admin",
                     PasswordHash = PasswordHelper.HashPassword("admin123"),
                     FirstName = "Sistem",
-                    LastName = "Yöneticisi",
+                    LastName = "YÃ¶neticisi",
                     Email = "admin@hospital.com",
-                    Phone = "05551234567",
                     Role = UserRole.Admin,
                     CreatedDate = DateTime.Now,
                     CreatedBy = "System",
@@ -256,15 +255,14 @@ namespace HospitalAutomation.Data
                         Username = "dr.mehmet.kardiyoloji",
                         PasswordHash = PasswordHelper.HashPassword("123456"),
                         FirstName = "Dr. Mehmet",
-                        LastName = "Yýlmaz",
+                        LastName = "YÄ±lmaz",
                         Email = "mehmet.yilmaz@hospital.com",
-                        Phone = "05551234568",
                         Role = UserRole.Doctor,
                         DepartmentId = cardiology?.Id,
                         Specialization = "Kardiyoloji",
                         MedicalLicenseNumber = "DOC001",
                         ExperienceYears = 15,
-                        Education = "Ýstanbul Üniversitesi Týp Fakültesi, Kardiyoloji Uzmaný",
+                        Education = "Ä°stanbul Ãœniversitesi TÄ±p FakÃ¼ltesi, Kardiyoloji UzmanÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -273,16 +271,15 @@ namespace HospitalAutomation.Data
                     {
                         Username = "dr.ayse.noroloji",
                         PasswordHash = PasswordHelper.HashPassword("123456"),
-                        FirstName = "Dr. Ayþe",
+                        FirstName = "Dr. AyÅŸe",
                         LastName = "Kaya",
                         Email = "ayse.kaya@hospital.com",
-                        Phone = "05551234569",
                         Role = UserRole.Doctor,
                         DepartmentId = neurology?.Id,
-                        Specialization = "Nöroloji",
+                        Specialization = "NÃ¶roloji",
                         MedicalLicenseNumber = "DOC002",
                         ExperienceYears = 12,
-                        Education = "Ankara Üniversitesi Týp Fakültesi, Nöroloji Uzmaný",
+                        Education = "Ankara Ãœniversitesi TÄ±p FakÃ¼ltesi, NÃ¶roloji UzmanÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -292,15 +289,14 @@ namespace HospitalAutomation.Data
                         Username = "dr.ali.ortopedi",
                         PasswordHash = PasswordHelper.HashPassword("123456"),
                         FirstName = "Dr. Ali",
-                        LastName = "Özkan",
+                        LastName = "Ã–zkan",
                         Email = "ali.ozkan@hospital.com",
-                        Phone = "05551234570",
                         Role = UserRole.Doctor,
                         DepartmentId = orthopedics?.Id,
                         Specialization = "Ortopedi ve Travmatoloji",
                         MedicalLicenseNumber = "DOC003",
                         ExperienceYears = 18,
-                        Education = "Hacettepe Üniversitesi Týp Fakültesi, Ortopedi Uzmaný",
+                        Education = "Hacettepe Ãœniversitesi TÄ±p FakÃ¼ltesi, Ortopedi UzmanÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -310,15 +306,14 @@ namespace HospitalAutomation.Data
                         Username = "dr.zeynep.dahiliye",
                         PasswordHash = PasswordHelper.HashPassword("123456"),
                         FirstName = "Dr. Zeynep",
-                        LastName = "Aydýn",
+                        LastName = "AydÄ±n",
                         Email = "zeynep.aydin@hospital.com",
-                        Phone = "05551234571",
                         Role = UserRole.Doctor,
                         DepartmentId = internalMedicine?.Id,
-                        Specialization = "Ýç Hastalýklarý",
+                        Specialization = "Ä°Ã§ HastalÄ±klarÄ±",
                         MedicalLicenseNumber = "DOC004",
                         ExperienceYears = 10,
-                        Education = "Ege Üniversitesi Týp Fakültesi, Ýç Hastalýklarý Uzmaný",
+                        Education = "Ege Ãœniversitesi TÄ±p FakÃ¼ltesi, Ä°Ã§ HastalÄ±klarÄ± UzmanÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -330,13 +325,12 @@ namespace HospitalAutomation.Data
                         FirstName = "Dr. Can",
                         LastName = "Bulut",
                         Email = "can.bulut@hospital.com",
-                        Phone = "05551234572",
                         Role = UserRole.Doctor,
                         DepartmentId = ophthalmology?.Id,
-                        Specialization = "Göz Hastalýklarý",
+                        Specialization = "GÃ¶z HastalÄ±klarÄ±",
                         MedicalLicenseNumber = "DOC005",
                         ExperienceYears = 8,
-                        Education = "Marmara Üniversitesi Týp Fakültesi, Göz Hastalýklarý Uzmaný",
+                        Education = "Marmara Ãœniversitesi TÄ±p FakÃ¼ltesi, GÃ¶z HastalÄ±klarÄ± UzmanÄ±",
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
                         IsActive = true
@@ -353,12 +347,11 @@ namespace HospitalAutomation.Data
                 {
                     new User
                     {
-                        Username = "hemþire.fatma",
+                        Username = "hemsire.fatma",
                         PasswordHash = PasswordHelper.HashPassword("123456"),
                         FirstName = "Fatma",
                         LastName = "Demir",
                         Email = "fatma.demir.nurse@hospital.com",
-                        Phone = "05551234580",
                         Role = UserRole.Nurse,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
@@ -366,12 +359,11 @@ namespace HospitalAutomation.Data
                     },
                     new User
                     {
-                        Username = "hemþire.elif",
+                        Username = "hemsire.elif",
                         PasswordHash = PasswordHelper.HashPassword("123456"),
                         FirstName = "Elif",
-                        LastName = "Þahin",
+                        LastName = "Åžahin",
                         Email = "elif.sahin@hospital.com",
-                        Phone = "05551234581",
                         Role = UserRole.Nurse,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
@@ -392,9 +384,8 @@ namespace HospitalAutomation.Data
                         Username = "resepsiyon.ali",
                         PasswordHash = PasswordHelper.HashPassword("123456"),
                         FirstName = "Ali",
-                        LastName = "Çelik",
+                        LastName = "Ã‡elik",
                         Email = "ali.celik@hospital.com",
-                        Phone = "05551234590",
                         Role = UserRole.Receptionist,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
@@ -405,9 +396,8 @@ namespace HospitalAutomation.Data
                         Username = "resepsiyon.sema",
                         PasswordHash = PasswordHelper.HashPassword("123456"),
                         FirstName = "Sema",
-                        LastName = "Yýldýz",
+                        LastName = "YÄ±ldÄ±z",
                         Email = "sema.yildiz@hospital.com",
-                        Phone = "05551234591",
                         Role = UserRole.Receptionist,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System",
@@ -427,12 +417,12 @@ namespace HospitalAutomation.Data
                     {
                         NationalId = "12345678901",
                         FirstName = "Ahmet",
-                        LastName = "Yýlmaz",
+                        LastName = "YÄ±lmaz",
                         BirthDate = new DateTime(1985, 5, 15),
                         Gender = Gender.Male,
                         Phone = "05551111111",
                         Email = "ahmet.yilmaz@email.com",
-                        Address = "Ýstanbul, Beyoðlu",
+                        Address = "Ä°stanbul, BeyoÄŸlu",
                         BloodType = BloodType.APositive,
                         CityId = istanbul?.Id,
                         CreatedDate = DateTime.Now,
@@ -442,13 +432,13 @@ namespace HospitalAutomation.Data
                     new Patient
                     {
                         NationalId = "98765432109",
-                        FirstName = "Ayþe",
+                        FirstName = "AyÅŸe",
                         LastName = "Kaya",
                         BirthDate = new DateTime(1992, 8, 22),
                         Gender = Gender.Female,
                         Phone = "05552222222",
                         Email = "ayse.kaya@email.com",
-                        Address = "Ankara, Çankaya",
+                        Address = "Ankara, Ã‡ankaya",
                         BloodType = BloodType.BPositive,
                         CityId = ankara?.Id,
                         CreatedDate = DateTime.Now,
@@ -464,7 +454,7 @@ namespace HospitalAutomation.Data
                         Gender = Gender.Male,
                         Phone = "05553333333",
                         Email = "mehmet.demir@email.com",
-                        Address = "Ýzmir, Konak",
+                        Address = "Ä°zmir, Konak",
                         BloodType = BloodType.ONegative,
                         CityId = izmir?.Id,
                         EmergencyContactName = "Fatma Demir",
@@ -490,18 +480,18 @@ namespace HospitalAutomation.Data
                         Name = "Paracetamol",
                         Dosage = "500mg",
                         Unit = "Tablet",
-                        Description = "Aðrý kesici ve ateþ düþürücü",
-                        Manufacturer = "Eczacýbaþý",
+                        Description = "AÄŸrÄ± kesici ve ateÅŸ dÃ¼ÅŸÃ¼rÃ¼cÃ¼",
+                        Manufacturer = "EczacÄ±baÅŸÄ±",
                         IsActive = true,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System"
                     },
                     new Medication
                     {
-                        Name = "Ýbuprofen",
+                        Name = "Ä°buprofen",
                         Dosage = "400mg",
                         Unit = "Tablet",
-                        Description = "Antiinflamatuar ve aðrý kesici",
+                        Description = "Antiinflamatuar ve aÄŸrÄ± kesici",
                         Manufacturer = "Pfizer",
                         IsActive = true,
                         CreatedDate = DateTime.Now,
@@ -513,7 +503,7 @@ namespace HospitalAutomation.Data
                         Dosage = "1000mg",
                         Unit = "Tablet",
                         Description = "Antibiyotik",
-                        Manufacturer = "Ýlko",
+                        Manufacturer = "Ä°lko",
                         IsActive = true,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "System"
@@ -522,8 +512,8 @@ namespace HospitalAutomation.Data
                     {
                         Name = "Omeprazol",
                         Dosage = "20mg",
-                        Unit = "Kapsül",
-                        Description = "Proton pompa inhibitörü",
+                        Unit = "KapsÃ¼l",
+                        Description = "Proton pompa inhibitÃ¶rÃ¼",
                         Manufacturer = "Deva",
                         IsActive = true,
                         CreatedDate = DateTime.Now,
@@ -534,7 +524,7 @@ namespace HospitalAutomation.Data
                         Name = "Metformin",
                         Dosage = "850mg",
                         Unit = "Tablet",
-                        Description = "Diyabet ilacý",
+                        Description = "Diyabet ilacÄ±",
                         Manufacturer = "Novartis",
                         IsActive = true,
                         CreatedDate = DateTime.Now,

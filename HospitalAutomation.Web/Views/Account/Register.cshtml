@@ -1,0 +1,112 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Kayıt Ol";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4">
+                    <h2 class="fw-bold mb-2">
+                        <i class="bi bi-person-plus-fill text-primary me-2"></i>
+                        Hasta Kayıt Formu
+                    </h2>
+                    <p class="text-muted mb-0">Yeni hasta kaydı oluşturun</p>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NationalId" class="form-label fw-semibold">
+                                    <i class="bi bi-card-text me-2"></i>TC Kimlik No
+                                </label>
+                                <input asp-for="NationalId" class="form-control" maxlength="11" placeholder="11 haneli TC Kimlik No" />
+                                <span asp-validation-for="NationalId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BirthDate" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar-event me-2"></i>Doğum Tarihi
+                                </label>
+                                <input asp-for="BirthDate" class="form-control" type="date" />
+                                <span asp-validation-for="BirthDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-2"></i>Ad
+                                </label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Adınızı girin" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-2"></i>Soyad
+                                </label>
+                                <input asp-for="LastName" class="form-control" placeholder="Soyadınızı girin" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Gender" class="form-label fw-semibold">
+                                    <i class="bi bi-gender-ambiguous me-2"></i>Cinsiyet
+                                </label>
+                                <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()" class="form-select">
+                                    <option value="">Seçiniz</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Phone" class="form-label fw-semibold">
+                                    <i class="bi bi-telephone me-2"></i>Telefon
+                                </label>
+                                <input asp-for="Phone" class="form-control" placeholder="05XX XXX XX XX" />
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-2"></i>E-posta
+                            </label>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="ornek@email.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Address" class="form-label fw-semibold">
+                                <i class="bi bi-geo-alt me-2"></i>Adres
+                            </label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Adres bilgilerinizi girin"></textarea>
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Kayıt Ol
+                            </button>
+                            <a asp-action="Login" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Giriş Sayfasına Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

@@ -1,0 +1,70 @@
+@model IEnumerable<HospitalAutomation.Models.MedicalRecord>
+
+@{
+    ViewData["Title"] = "Tıbbi Kayıtlarım";
+}
+
+<div class="container-fluid py-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-file-medical me-2"></i>Tıbbi Geçmişim</h4>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="list-group list-group-flush">
+                    @foreach (var record in Model)
+                    {
+                        <div class="list-group-item p-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">@record.Diagnosis</h5>
+                                    <p class="text-muted mb-0 small">
+                                        <i class="bi bi-person-badge me-1"></i>Dr. @record.Doctor?.FullName
+                                        <span class="mx-2">|</span>
+                                        <i class="bi bi-calendar3 me-1"></i>@record.RecordDate.ToString("dd MMMM yyyy")
+                                    </p>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">Muayene</span>
+                            </div>
+                            
+                            <div class="row g-3">
+                                @if (!string.IsNullOrEmpty(record.Symptoms))
+                                {
+                                    <div class="col-md-6">
+                                        <strong class="d-block text-secondary small text-uppercase mb-1">Şikayetler</strong>
+                                        <p class="mb-0 bg-light p-2 rounded">@record.Symptoms</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(record.Treatment))
+                                {
+                                    <div class="col-md-6">
+                                        <strong class="d-block text-secondary small text-uppercase mb-1">Uygulanan Tedavi</strong>
+                                        <p class="mb-0 bg-light p-2 rounded">@record.Treatment</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(record.Prescription))
+                                {
+                                    <div class="col-12">
+                                        <strong class="d-block text-secondary small text-uppercase mb-1">Reçete</strong>
+                                        <div class="bg-light p-2 rounded border-start border-4 border-success">
+                                            <i class="bi bi-capsule me-2 text-success"></i>@record.Prescription
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-clipboard-heart display-1 text-muted opacity-25 mb-3"></i>
+                    <h4 class="text-muted">Kayıtlı tıbbi geçmişiniz bulunmamaktadır.</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,105 @@
+@model IEnumerable<HospitalAutomation.Models.MedicationAdministration>
+@using HospitalAutomation.Models.Enums
+
+@{
+    ViewData["Title"] = "İlaç Takibi";
+    var patientId = ViewBag.PatientId as int?;
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary mb-0">
+            <i class="bi bi-capsule me-2"></i>İlaç Takibi
+            @if (patientId.HasValue)
+            {
+                <span class="text-muted fs-6 ms-2">(@Model.FirstOrDefault()?.Patient?.FullName için)</span>
+            }
+        </h4>
+        <a asp-action="CreateMedicationAdministration" asp-route-patientId="@patientId" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>İlaç Planla
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 py-3 ps-4">Planlanan Zaman</th>
+                                @if (!patientId.HasValue)
+                                {
+                                    <th class="border-0 py-3">Hasta</th>
+                                }
+                                <th class="border-0 py-3">İlaç</th>
+                                <th class="border-0 py-3">Doz</th>
+                                <th class="border-0 py-3">İsteyen Doktor</th>
+                                <th class="border-0 py-3">Durum</th>
+                                <th class="border-0 py-3 text-end pe-4">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="@(item.ScheduledDateTime < DateTime.Now && item.Status == MedicationStatus.Scheduled ? "text-danger fw-bold" : "")">
+                                            @item.ScheduledDateTime.ToString("dd.MM.yyyy HH:mm")
+                                        </span>
+                                    </td>
+                                    @if (!patientId.HasValue)
+                                    {
+                                        <td>
+                                            <a asp-action="MedicationTracking" asp-route-patientId="@item.PatientId" class="text-decoration-none fw-bold">
+                                                @item.Patient?.FullName
+                                            </a>
+                                        </td>
+                                    }
+                                    <td>@item.Medication?.Name</td>
+                                    <td>@item.Dosage</td>
+                                    <td>@item.Doctor?.FullName</td>
+                                    <td>
+                                        @switch (item.Status)
+                                        {
+                                            case MedicationStatus.Scheduled:
+                                                <span class="badge bg-warning text-dark">Planlandı</span>
+                                                break;
+                                            case MedicationStatus.Administered:
+                                                <span class="badge bg-success">Uygulandı</span>
+                                                <br />
+                                                <small class="text-muted">@item.AdministeredDateTime?.ToString("HH:mm")</small>
+                                                break;
+                                            case MedicationStatus.Skipped:
+                                                <span class="badge bg-secondary">Atlandı</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        @if (item.Status == MedicationStatus.Scheduled)
+                                        {
+                                            <form asp-action="AdministerMedication" asp-route-id="@item.Id" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                                    <i class="bi bi-check-lg me-1"></i>Uygula
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-capsule-pill display-1 text-muted opacity-25 mb-3"></i>
+                    <h4 class="text-muted">Planlanmış ilaç bulunmamaktadır.</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

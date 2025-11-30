@@ -1,0 +1,61 @@
+@model HospitalAutomation.Models.NursingNote
+@using HospitalAutomation.Models
+
+@{
+    ViewData["Title"] = "Not Ekle";
+    var patients = ViewBag.Patients as List<Patient>;
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-info text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-journal-plus me-2"></i>Yeni Hemşire Notu</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateNursingNote" method="post">
+                        <input type="hidden" asp-for="NurseId" />
+                        
+                        <div class="mb-4">
+                            <label asp-for="PatientId" class="form-label fw-bold">Hasta Seçimi</label>
+                            <select asp-for="PatientId" class="form-select form-select-lg" required>
+                                <option value="">-- Hasta Seçiniz --</option>
+                                @if (patients != null)
+                                {
+                                    foreach (var p in patients)
+                                    {
+                                        <option value="@p.Id">@p.FullName (@p.NationalId)</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="PatientId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="NoteDateTime" class="form-label fw-bold">Not Zamanı</label>
+                            <input asp-for="NoteDateTime" class="form-control" type="datetime-local" required />
+                            <span asp-validation-for="NoteDateTime" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Content" class="form-label fw-bold">Gözlem Notu</label>
+                            <textarea asp-for="Content" class="form-control" rows="5" placeholder="Gözlemlerinizi buraya yazınız..." required></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="NursingNotes" class="btn btn-light btn-lg px-4">İptal</a>
+                            <button type="submit" class="btn btn-info text-white btn-lg px-5 shadow-sm">Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

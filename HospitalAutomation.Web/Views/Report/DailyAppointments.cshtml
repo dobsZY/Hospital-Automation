@@ -1,0 +1,112 @@
+@model IEnumerable<HospitalAutomation.Models.Appointment>
+@using HospitalAutomation.Models.Enums
+
+@{
+    ViewData["Title"] = "Günlük Randevu Raporu";
+    var selectedDate = ViewBag.SelectedDate as DateTime? ?? DateTime.Today;
+}
+
+<div class="container-fluid py-4">
+    <div class="card shadow-sm border-0 no-print">
+        <div class="card-body py-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-file-earmark-bar-graph me-2"></i>Randevu Raporu</h4>
+                
+                <div class="d-flex gap-3 align-items-center">
+                    <form asp-action="DailyAppointments" method="get" class="d-flex gap-2 align-items-center">
+                        <label class="text-muted small text-nowrap">Rapor Tarihi:</label>
+                        <input type="date" name="date" class="form-control form-control-sm" value="@selectedDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
+                    </form>
+                    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-printer me-2"></i>Yazdır
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Header (Only visible in print) -->
+    <div class="d-none d-print-block mb-4">
+        <h2 class="text-center">Günlük Randevu Raporu</h2>
+        <p class="text-center text-muted">Tarih: @selectedDate.ToString("dd.MM.yyyy")</p>
+        <hr />
+    </div>
+
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="py-3 ps-4">Saat</th>
+                                <th class="py-3">Hasta Adı</th>
+                                <th class="py-3">TC Kimlik No</th>
+                                <th class="py-3">Doktor</th>
+                                <th class="py-3">Bölüm</th>
+                                <th class="py-3">Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appt in Model.OrderBy(a => a.AppointmentTime))
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold">@appt.AppointmentTime</td>
+                                    <td>@appt.Patient?.FullName</td>
+                                    <td>@appt.Patient?.NationalId</td>
+                                    <td>Dr. @appt.Doctor?.FullName</td>
+                                    <td>@(appt.Doctor?.Department?.Name ?? "-")</td>
+                                    <td>
+                                        @switch (appt.Status)
+                                        {
+                                            case AppointmentStatus.Scheduled:
+                                                <span class="badge bg-info d-print-none">Bekliyor</span>
+                                                <span class="d-none d-print-inline">Bekliyor</span>
+                                                break;
+                                            case AppointmentStatus.Completed:
+                                                <span class="badge bg-success d-print-none">Tamamlandı</span>
+                                                <span class="d-none d-print-inline">Tamamlandı</span>
+                                                break;
+                                            case AppointmentStatus.Cancelled:
+                                                <span class="badge bg-danger d-print-none">İptal</span>
+                                                <span class="d-none d-print-inline">İptal</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary d-print-none">@appt.Status</span>
+                                                <span class="d-none d-print-inline">@appt.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-light fw-bold">
+                                <td colspan="5" class="ps-4 py-3 text-end">Toplam Randevu:</td>
+                                <td class="py-3">@Model.Count()</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x display-1 text-muted opacity-25 mb-3"></i>
+                    <h5 class="text-muted">Seçilen tarihte kayıt bulunmamaktadır.</h5>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .no-print { display: none !important; }
+        .sidebar, header, footer { display: none !important; }
+        .main-content { margin: 0 !important; padding: 0 !important; }
+        .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+    }
+</style>
+

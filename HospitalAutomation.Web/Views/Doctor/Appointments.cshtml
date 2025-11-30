@@ -1,0 +1,92 @@
+@model IEnumerable<HospitalAutomation.Models.Appointment>
+@using HospitalAutomation.Models.Enums
+
+@{
+    ViewData["Title"] = "Randevularım";
+    var selectedDate = ViewBag.SelectedDate as DateTime? ?? DateTime.Today;
+}
+
+<div class="container-fluid py-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-calendar-check me-2"></i>Randevularım</h4>
+            
+            <form asp-action="Appointments" method="get" class="d-flex gap-2 align-items-center">
+                <label class="text-muted small text-nowrap">Tarih Seç:</label>
+                <input type="date" name="date" class="form-control form-control-sm" value="@selectedDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
+            </form>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 py-3 ps-4">Saat</th>
+                                <th class="border-0 py-3">Hasta Adı</th>
+                                <th class="border-0 py-3">TC Kimlik No</th>
+                                <th class="border-0 py-3">Durum</th>
+                                <th class="border-0 py-3 text-end pe-4">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appt in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold">@appt.AppointmentTime</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-light text-dark rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                            <span>@appt.Patient?.FullName</span>
+                                        </div>
+                                    </td>
+                                    <td>@appt.Patient?.NationalId</td>
+                                    <td>
+                                        @switch (appt.Status)
+                                        {
+                                            case AppointmentStatus.Scheduled:
+                                                <span class="badge bg-info">Bekliyor</span>
+                                                break;
+                                            case AppointmentStatus.Completed:
+                                                <span class="badge bg-success">Tamamlandı</span>
+                                                break;
+                                            case AppointmentStatus.Cancelled:
+                                                <span class="badge bg-danger">İptal</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">@appt.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group">
+                                            <a asp-action="CreateMedicalRecord" asp-route-appointmentId="@appt.Id" asp-route-patientId="@appt.PatientId" class="btn btn-sm btn-outline-primary" title="Kayıt Aç">
+                                                <i class="bi bi-file-medical-plus"></i>
+                                            </a>
+                                            <a asp-controller="Patient" asp-action="Details" asp-route-id="@appt.PatientId" class="btn btn-sm btn-outline-info" title="Hasta Detayı">
+                                                <i class="bi bi-person-lines-fill"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-calendar-x display-4 text-muted opacity-25"></i>
+                    </div>
+                    <h5 class="text-muted">Bu tarihte randevu bulunmamaktadır.</h5>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

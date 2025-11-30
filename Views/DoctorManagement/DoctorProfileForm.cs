@@ -153,7 +153,7 @@ namespace HospitalAutomation.Views.DoctorManagement
             this.lblSpecialty.Name = "lblSpecialty";
             this.lblSpecialty.Size = new System.Drawing.Size(79, 20);
             this.lblSpecialty.TabIndex = 8;
-            this.lblSpecialty.Text = "Uzmanlýk:";
+            this.lblSpecialty.Text = "Uzmanlï¿½k:";
             
             // 
             // txtSpecialty
@@ -209,7 +209,7 @@ namespace HospitalAutomation.Views.DoctorManagement
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(100, 35);
             this.btnCancel.TabIndex = 3;
-            this.btnCancel.Text = "Ýptal";
+            this.btnCancel.Text = "ï¿½ptal";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             
@@ -244,12 +244,13 @@ namespace HospitalAutomation.Views.DoctorManagement
                 txtFirstName.Text = user.FirstName;
                 txtLastName.Text = user.LastName;
                 txtEmail.Text = user.Email;
-                txtPhone.Text = user.Phone;
+                // Phone property removed from User model
+                // txtPhone.Text = user.Phone;
                 txtSpecialty.Text = user.Specialization ?? "Genel Pratisyen";
-                txtLicenseNumber.Text = user.MedicalLicenseNumber ?? "Belirtilmemiþ";
+                txtLicenseNumber.Text = user.MedicalLicenseNumber ?? "Belirtilmemiï¿½";
             }
             
-            // Servisi baþlat
+            // Servisi baï¿½lat
             try
             {
                 var context = new HospitalDbContext();
@@ -258,7 +259,7 @@ namespace HospitalAutomation.Views.DoctorManagement
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Servis baþlatýlýrken hata oluþtu: {ex.Message}", "Hata", 
+                MessageBox.Show($"Servis baï¿½latï¿½lï¿½rken hata oluï¿½tu: {ex.Message}", "Hata", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -269,7 +270,7 @@ namespace HospitalAutomation.Views.DoctorManagement
             {
                 if (string.IsNullOrWhiteSpace(txtFirstName.Text) || string.IsNullOrWhiteSpace(txtLastName.Text))
                 {
-                    MessageBox.Show("Ad ve Soyad alanlarý boþ býrakýlamaz!", "Uyarý", 
+                    MessageBox.Show("Ad ve Soyad alanlarï¿½ boï¿½ bï¿½rakï¿½lamaz!", "Uyarï¿½", 
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -280,13 +281,14 @@ namespace HospitalAutomation.Views.DoctorManagement
                     user.FirstName = txtFirstName.Text.Trim();
                     user.LastName = txtLastName.Text.Trim();
                     user.Email = txtEmail.Text.Trim();
-                    user.Phone = txtPhone.Text.Trim();
+                    // Phone property removed from User model
+                    // user.Phone = txtPhone.Text.Trim();
                     user.Specialization = txtSpecialty.Text.Trim();
 
-                    // Veritabanýný güncelle
+                    // Veritabanï¿½nï¿½ gï¿½ncelle
                     _userService.UpdateUser(user);
 
-                    MessageBox.Show("Profil bilgileriniz baþarýyla güncellendi!", "Baþarýlý", 
+                    MessageBox.Show("Profil bilgileriniz baï¿½arï¿½yla gï¿½ncellendi!", "Baï¿½arï¿½lï¿½", 
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     
                     this.Close();
@@ -294,7 +296,7 @@ namespace HospitalAutomation.Views.DoctorManagement
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Profil güncellenirken hata oluþtu: {ex.Message}", "Hata", 
+                MessageBox.Show($"Profil gï¿½ncellenirken hata oluï¿½tu: {ex.Message}", "Hata", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

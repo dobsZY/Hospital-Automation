@@ -1,0 +1,114 @@
+@model HospitalAutomation.Models.MedicalRecord
+@using HospitalAutomation.Models
+
+@{
+    ViewData["Title"] = "Yeni Tıbbi Kayıt";
+    var patients = ViewBag.Patients as List<Patient>;
+    var appointments = ViewBag.Appointments as List<Appointment>;
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-file-earmark-plus me-2"></i>Yeni Muayene Kaydı</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateMedicalRecord" method="post">
+                        <input type="hidden" asp-for="DoctorId" />
+                        <input type="hidden" asp-for="RecordDate" />
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="PatientId" class="form-label fw-bold">Hasta Seçimi</label>
+                                <select asp-for="PatientId" class="form-select form-select-lg" required>
+                                    <option value="">-- Hasta Seçiniz --</option>
+                                    @if (patients != null)
+                                    {
+                                        foreach (var p in patients)
+                                        {
+                                            <option value="@p.Id">@p.FullName (@p.NationalId)</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="PatientId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="AppointmentId" class="form-label fw-bold">İlgili Randevu (Opsiyonel)</label>
+                                <select asp-for="AppointmentId" class="form-select form-select-lg">
+                                    <option value="">-- Randevu Seçiniz --</option>
+                                    @if (appointments != null)
+                                    {
+                                        foreach (var a in appointments)
+                                        {
+                                            <option value="@a.Id" data-patient="@a.PatientId">
+                                                @a.AppointmentDate.ToString("dd.MM.yyyy") - @a.AppointmentTime (@a.Patient?.FullName)
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Diagnosis" class="form-label fw-bold">Tanı (Teşhis)</label>
+                            <input asp-for="Diagnosis" class="form-control form-control-lg" placeholder="Örn: Akut Üst Solunum Yolu Enfeksiyonu" required />
+                            <span asp-validation-for="Diagnosis" class="text-danger"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label asp-for="Symptoms" class="form-label fw-bold">Şikayetler / Semptomlar</label>
+                                <textarea asp-for="Symptoms" class="form-control" rows="3" placeholder="Hastanın şikayetleri..."></textarea>
+                                <span asp-validation-for="Symptoms" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Treatment" class="form-label fw-bold">Uygulanan Tedavi</label>
+                                <textarea asp-for="Treatment" class="form-control" rows="3" placeholder="Yapılan işlemler, öneriler..."></textarea>
+                                <span asp-validation-for="Treatment" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Prescription" class="form-label fw-bold text-success"><i class="bi bi-prescription me-1"></i>Reçete</label>
+                            <div class="input-group">
+                                <textarea asp-for="Prescription" class="form-control border-success" rows="3" placeholder="İlaçlar ve kullanım şekilleri..."></textarea>
+                            </div>
+                            <span asp-validation-for="Prescription" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label fw-bold">Özel Notlar</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Sadece doktorun göreceği notlar..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="MedicalRecords" class="btn btn-light btn-lg px-4">İptal</a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">Kaydı Oluştur</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Randevu seçildiğinde hastayı otomatik seç
+            $('#AppointmentId').change(function() {
+                var patientId = $(this).find(':selected').data('patient');
+                if (patientId) {
+                    $('#PatientId').val(patientId).trigger('change');
+                }
+            });
+
+            // Hasta değiştiğinde randevuları filtrele (Gelişmiş versiyon için)
+            // Şimdilik basit bırakıyoruz.
+        });
+    </script>
+}
+

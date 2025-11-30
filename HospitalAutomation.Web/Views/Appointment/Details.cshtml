@@ -1,0 +1,57 @@
+@model Appointment
+@{
+    ViewData["Title"] = "Randevu Detayları";
+}
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h3>Randevu Detayları</h3>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Hasta:</dt>
+                    <dd class="col-sm-9">@(Model.Patient?.FullName ?? "-")</dd>
+
+                    <dt class="col-sm-3">Doktor:</dt>
+                    <dd class="col-sm-9">@(Model.Doctor?.FullName ?? "-")</dd>
+
+                    <dt class="col-sm-3">Bölüm:</dt>
+                    <dd class="col-sm-9">@(Model.Department?.Name ?? "-")</dd>
+
+                    <dt class="col-sm-3">Tarih:</dt>
+                    <dd class="col-sm-9">@Model.AppointmentDate.ToString("dd.MM.yyyy")</dd>
+
+                    <dt class="col-sm-3">Saat:</dt>
+                    <dd class="col-sm-9">@Model.AppointmentTime.ToString(@"hh\:mm")</dd>
+
+                    <dt class="col-sm-3">Durum:</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-@(Model.Status == AppointmentStatus.Scheduled ? "primary" : Model.Status == AppointmentStatus.Completed ? "success" : "danger")">
+                            @Model.Status
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-3">Notlar:</dt>
+                    <dd class="col-sm-9">@(Model.Notes ?? "-")</dd>
+
+                    <dt class="col-sm-3">Semptomlar:</dt>
+                    <dd class="col-sm-9">@(Model.Symptoms ?? "-")</dd>
+                </dl>
+
+                <div class="mt-3">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+                    @if (Model.Status == AppointmentStatus.Scheduled)
+                    {
+                        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?');">
+                            <button type="submit" class="btn btn-danger">İptal Et</button>
+                        </form>
+                    }
+                    <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

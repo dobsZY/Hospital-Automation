@@ -1,0 +1,150 @@
+@model HospitalAutomation.Models.Appointment
+@using HospitalAutomation.Models
+
+@{
+    ViewData["Title"] = "Yeni Randevu";
+    var doctors = ViewBag.Doctors as List<User>;
+    var departments = ViewBag.Departments as List<Department>;
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Yeni Randevu Oluştur</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateAppointment" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Bölüm Seçimi -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Bölüm Seçiniz</label>
+                            <select id="departmentSelect" class="form-select form-select-lg" required>
+                                <option value="">-- Bölüm Seçiniz --</option>
+                                @if (departments != null)
+                                {
+                                    foreach (var dept in departments)
+                                    {
+                                        <option value="@dept.Id">@dept.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Doktor Seçimi -->
+                        <div class="mb-4">
+                            <label asp-for="DoctorId" class="form-label fw-bold text-secondary">Doktor Seçiniz</label>
+                            <select asp-for="DoctorId" class="form-select form-select-lg" disabled>
+                                <option value="">-- Önce Bölüm Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="DoctorId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Tarih Seçimi -->
+                        <div class="mb-4">
+                            <label asp-for="AppointmentDate" class="form-label fw-bold text-secondary">Tarih Seçiniz</label>
+                            <input asp-for="AppointmentDate" type="date" class="form-control form-select-lg" 
+                                   min="@DateTime.Today.ToString("yyyy-MM-dd")" disabled />
+                            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                        </div>
+
+                        <!-- Saat Seçimi -->
+                        <div class="mb-4">
+                            <label asp-for="AppointmentTime" class="form-label fw-bold text-secondary">Saat Seçiniz</label>
+                            <div id="timeSlotsContainer" class="d-flex flex-wrap gap-2 p-3 bg-light rounded border">
+                                <span class="text-muted fst-italic">Lütfen önce doktor ve tarih seçiniz.</span>
+                            </div>
+                            <input type="hidden" asp-for="AppointmentTime" />
+                            <span asp-validation-for="AppointmentTime" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Symptoms" class="form-label fw-bold text-secondary">Şikayetiniz (İsteğe Bağlı)</label>
+                            <textarea asp-for="Symptoms" class="form-control" rows="3" placeholder="Kısaca şikayetinizi belirtiniz..."></textarea>
+                            <span asp-validation-for="Symptoms" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Appointments" class="btn btn-light btn-lg px-4">İptal</a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">Randevu Oluştur</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            var allDoctors = @Json.Serialize(doctors?.Select(d => new { d.Id, d.FullName, d.DepartmentId }));
+
+            // Bölüm değiştiğinde doktorları filtrele
+            $('#departmentSelect').change(function () {
+                var deptId = $(this).val();
+                var doctorSelect = $('#DoctorId');
+                
+                doctorSelect.empty().append('<option value="">-- Doktor Seçiniz --</option>');
+                $('#AppointmentDate').prop('disabled', true).val('');
+                $('#timeSlotsContainer').html('<span class="text-muted fst-italic">Lütfen önce doktor ve tarih seçiniz.</span>');
+                $('#AppointmentTime').val('');
+
+                if (deptId) {
+                    var filteredDoctors = allDoctors.filter(d => d.departmentId == deptId);
+                    $.each(filteredDoctors, function (i, doctor) {
+                        doctorSelect.append($('<option></option>').val(doctor.id).text(doctor.fullName));
+                    });
+                    doctorSelect.prop('disabled', false);
+                } else {
+                    doctorSelect.prop('disabled', true);
+                }
+            });
+
+            // Doktor değiştiğinde tarih seçimini aktif et
+            $('#DoctorId').change(function () {
+                if ($(this).val()) {
+                    $('#AppointmentDate').prop('disabled', false);
+                } else {
+                    $('#AppointmentDate').prop('disabled', true).val('');
+                    $('#timeSlotsContainer').html('<span class="text-muted fst-italic">Lütfen önce doktor ve tarih seçiniz.</span>');
+                    $('#AppointmentTime').val('');
+                }
+            });
+
+            // Tarih değiştiğinde saatleri getir
+            $('#AppointmentDate').change(function () {
+                var doctorId = $('#DoctorId').val();
+                var date = $(this).val();
+                var container = $('#timeSlotsContainer');
+
+                if (doctorId && date) {
+                    container.html('<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Yükleniyor...</span></div>');
+                    
+                    $.get('/Appointment/GetAvailableTimeSlots', { doctorId: doctorId, date: date }, function (slots) {
+                        container.empty();
+                        if (slots && slots.length > 0) {
+                            $.each(slots, function (i, slot) {
+                                var btn = $('<button type="button" class="btn btn-outline-primary time-slot-btn">' + slot + '</button>');
+                                btn.click(function () {
+                                    $('.time-slot-btn').removeClass('active bg-primary text-white');
+                                    $(this).addClass('active bg-primary text-white');
+                                    $('#AppointmentTime').val(slot);
+                                });
+                                container.append(btn);
+                            });
+                        } else {
+                            container.html('<span class="text-danger">Seçilen tarihte uygun randevu saati bulunmamaktadır.</span>');
+                        }
+                    }).fail(function() {
+                        container.html('<span class="text-danger">Saatler yüklenirken hata oluştu.</span>');
+                    });
+                }
+            });
+        });
+    </script>
+}
+

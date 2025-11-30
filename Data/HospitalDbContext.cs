@@ -23,7 +23,7 @@ namespace HospitalAutomation.Data
         public DbSet<City> Cities { get; set; }
         public DbSet<District> Districts { get; set; }
         
-        // Hemþire iþlemleri için yeni DbSet'ler
+        // Hemï¿½ire iï¿½lemleri iï¿½in yeni DbSet'ler
         public DbSet<VitalSigns> VitalSigns { get; set; }
         public DbSet<Medication> Medications { get; set; }
         public DbSet<MedicationAdministration> MedicationAdministrations { get; set; }
@@ -72,10 +72,6 @@ namespace HospitalAutomation.Data
                 .Property(u => u.LastName)
                 .IsRequired()
                 .HasMaxLength(50);
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.Phone)
-                .HasMaxLength(20);
 
             // User-Department relationship
             modelBuilder.Entity<User>()
