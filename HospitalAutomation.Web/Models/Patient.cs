@@ -61,10 +61,10 @@ namespace HospitalAutomation.Models
 
         // Navigation Properties
         [ForeignKey("CityId")]
-        public virtual City City { get; set; }
+        public virtual City? City { get; set; }
 
         [ForeignKey("DistrictId")]
-        public virtual District District { get; set; }
+        public virtual District? District { get; set; }
 
         public virtual ICollection<Appointment> Appointments { get; set; }
         public virtual ICollection<MedicalRecord> MedicalRecords { get; set; }

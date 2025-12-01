@@ -108,17 +108,42 @@ namespace HospitalAutomation.Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CreateVitalSigns(VitalSigns vitalSigns)
         {
+            Console.WriteLine(">>> CreateVitalSigns [POST] Metoduna Girildi");
             try
             {
                 if (!ModelState.IsValid)
                 {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($">>> VitalSigns ModelState Error: {error}");
+                    }
                     ViewBag.Patients = _patientService.GetAllPatients().ToList();
                     return View(vitalSigns);
                 }
 
+                var currentUser = SessionManager.GetCurrentUser(HttpContext);
+                if (currentUser != null)
+                {
+                    // Verify user exists in DB to prevent Foreign Key errors (Stale Cookie)
+                    var dbUser = _unitOfWork.Users.GetById(currentUser.Id);
+                    if (dbUser == null)
+                    {
+                        return RedirectToAction("Logout", "Account");
+                    }
+                    vitalSigns.NurseId = currentUser.Id;
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                
                 vitalSigns.MeasurementDateTime = DateTime.Now;
                 vitalSigns.CreatedDate = DateTime.Now;
                 vitalSigns.IsActive = true;
+                
+                // Veritabanı NOT NULL hatasını önlemek için varsayılan değerler
+                vitalSigns.Notes ??= "";
 
                 _unitOfWork.VitalSigns.Add(vitalSigns);
                 _unitOfWork.Complete();
@@ -128,6 +153,9 @@ namespace HospitalAutomation.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($">>> CreateVitalSigns Exception: {ex.Message}");
+                if (ex.InnerException != null) Console.WriteLine($">>> Inner: {ex.InnerException.Message}");
+                
                 ModelState.AddModelError("", $"Hata: {ex.Message}");
                 ViewBag.Patients = _patientService.GetAllPatients().ToList();
                 return View(vitalSigns);
@@ -195,18 +223,57 @@ namespace HospitalAutomation.Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CreateMedicationAdministration(MedicationAdministration administration)
         {
+            Console.WriteLine(">>> CreateMedicationAdministration [POST] Metoduna Girildi");
             try
             {
                 if (!ModelState.IsValid)
                 {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($">>> Medication ModelState Error: {error}");
+                    }
                     ViewBag.Patients = _patientService.GetAllPatients().ToList();
                     ViewBag.Medications = _unitOfWork.Medications.GetActiveMedications().ToList();
                     ViewBag.Doctors = _unitOfWork.Users.GetByRole(UserRole.Doctor).ToList();
                     return View(administration);
                 }
 
+                var currentUser = SessionManager.GetCurrentUser(HttpContext);
+                if (currentUser != null)
+                {
+                    // Verify user exists in DB to prevent Foreign Key errors (Stale Cookie)
+                    var dbUser = _unitOfWork.Users.GetById(currentUser.Id);
+                    if (dbUser == null)
+                    {
+                        return RedirectToAction("Logout", "Account");
+                    }
+                    administration.NurseId = currentUser.Id;
+                }
+                else 
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                // DoctorId 0 gelirse null yap (FK hatasını önlemek için)
+                if (administration.DoctorId == 0) administration.DoctorId = null;
+
+                // MedicationId düzeltmesi
+                if (administration.MedicationId == 0) 
+                {
+                     // Eğer MedicationId 0 ise, formda bir hata olabilir veya binding sorunu vardır.
+                     // Medication.Id ve Medication.MedicationId uyuşmazlığı olabilir.
+                     // View'da "value" attribute'u doğru set edilmemiş olabilir.
+                }
+
+                Console.WriteLine($"DEBUG: Saving MedicationAdministration: PatientId={administration.PatientId}, MedicationId={administration.MedicationId}, NurseId={administration.NurseId}, DoctorId={administration.DoctorId}");
+
                 administration.CreatedDate = DateTime.Now;
                 administration.IsActive = true;
+                
+                // Veritabanı NOT NULL hatasını önlemek için varsayılan değerler
+                administration.SideEffects ??= "";
+                administration.Notes ??= "";
 
                 _unitOfWork.MedicationAdministrations.Add(administration);
                 _unitOfWork.Complete();
@@ -216,6 +283,9 @@ namespace HospitalAutomation.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($">>> CreateMedication Exception: {ex.Message}");
+                if (ex.InnerException != null) Console.WriteLine($">>> Inner: {ex.InnerException.Message}");
+
                 ModelState.AddModelError("", $"Hata: {ex.Message}");
                 ViewBag.Patients = _patientService.GetAllPatients().ToList();
                 ViewBag.Medications = _unitOfWork.Medications.GetActiveMedications().ToList();
@@ -230,7 +300,8 @@ namespace HospitalAutomation.Web.Controllers
         {
             try
             {
-                var administration = _unitOfWork.MedicationAdministrations.GetById(id);
+                // Use SingleOrDefault with AdministrationId because GetById looks for Id which might be 0
+                var administration = _unitOfWork.MedicationAdministrations.SingleOrDefault(x => x.AdministrationId == id);
                 if (administration == null)
                 {
                     TempData["ErrorMessage"] = "İlaç uygulaması bulunamadı";
@@ -311,17 +382,44 @@ namespace HospitalAutomation.Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CreateNursingNote(NursingNote note)
         {
+            Console.WriteLine(">>> CreateNursingNote [POST] Metoduna Girildi");
             try
             {
                 if (!ModelState.IsValid)
                 {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($">>> Note ModelState Error: {error}");
+                    }
                     ViewBag.Patients = _patientService.GetAllPatients().ToList();
                     return View(note);
+                }
+
+                var currentUser = SessionManager.GetCurrentUser(HttpContext);
+                if (currentUser != null)
+                {
+                    // Verify user exists in DB to prevent Foreign Key errors (Stale Cookie)
+                    var dbUser = _unitOfWork.Users.GetById(currentUser.Id);
+                    if (dbUser == null)
+                    {
+                        return RedirectToAction("Logout", "Account");
+                    }
+                    note.NurseId = currentUser.Id;
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Account");
                 }
 
                 note.NoteDateTime = DateTime.Now;
                 note.CreatedDate = DateTime.Now;
                 note.IsActive = true;
+                
+                // Veritabanı NOT NULL hatasını önlemek için varsayılan değerler
+                note.Assessment ??= "";
+                note.InterventionPlanned ??= "";
+                note.PatientResponse ??= "";
 
                 _unitOfWork.NursingNotes.Add(note);
                 _unitOfWork.Complete();
@@ -331,6 +429,9 @@ namespace HospitalAutomation.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($">>> CreateNote Exception: {ex.Message}");
+                if (ex.InnerException != null) Console.WriteLine($">>> Inner: {ex.InnerException.Message}");
+
                 ModelState.AddModelError("", $"Hata: {ex.Message}");
                 ViewBag.Patients = _patientService.GetAllPatients().ToList();
                 return View(note);

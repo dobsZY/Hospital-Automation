@@ -34,46 +34,50 @@ namespace HospitalAutomation.Data.Repositories
         // Interface methods implementation
         public IEnumerable<Appointment> GetAppointmentsByPatient(int patientId)
         {
-            return _dbSet.Include(a => a.Patient)
+            var appointments = _dbSet.Include(a => a.Patient)
                         .Include(a => a.Doctor)
                         .Include(a => a.Department)
                         .Where(a => a.PatientId == patientId && a.IsActive)
-                        .OrderByDescending(a => a.AppointmentDate)
-                        .ThenByDescending(a => a.AppointmentTime)
                         .ToList();
+
+            return appointments.OrderByDescending(a => a.AppointmentDate)
+                        .ThenByDescending(a => a.AppointmentTime);
         }
 
         public IEnumerable<Appointment> GetAppointmentsByDoctor(int doctorId)
         {
-            return _dbSet.Include(a => a.Patient)
+            var appointments = _dbSet.Include(a => a.Patient)
                         .Include(a => a.Doctor)
                         .Include(a => a.Department)
                         .Where(a => a.DoctorId == doctorId && a.IsActive)
-                        .OrderByDescending(a => a.AppointmentDate)
-                        .ThenByDescending(a => a.AppointmentTime)
                         .ToList();
+
+            return appointments.OrderByDescending(a => a.AppointmentDate)
+                        .ThenByDescending(a => a.AppointmentTime);
         }
 
         public IEnumerable<Appointment> GetAppointmentsByDate(DateTime date)
         {
-            return _dbSet.Include(a => a.Patient)
+            var appointments = _dbSet.Include(a => a.Patient)
                         .Include(a => a.Doctor)
                         .Include(a => a.Department)
                         .Where(a => a.AppointmentDate.Date == date.Date && a.IsActive)
-                        .OrderBy(a => a.AppointmentTime)
                         .ToList();
+
+            return appointments.OrderBy(a => a.AppointmentTime);
         }
 
         public IEnumerable<Appointment> GetAppointmentsByDateRange(DateTime startDate, DateTime endDate)
         {
-            return _dbSet.Include(a => a.Patient)
+            var appointments = _dbSet.Include(a => a.Patient)
                         .Include(a => a.Doctor)
                         .Include(a => a.Department)
                         .Where(a => a.AppointmentDate.Date >= startDate.Date && 
                             a.AppointmentDate.Date <= endDate.Date && a.IsActive)
-                        .OrderBy(a => a.AppointmentDate)
-                        .ThenBy(a => a.AppointmentTime)
                         .ToList();
+
+            return appointments.OrderBy(a => a.AppointmentDate)
+                        .ThenBy(a => a.AppointmentTime);
         }
 
         public IEnumerable<Appointment> GetTodayAppointments()
@@ -85,24 +89,26 @@ namespace HospitalAutomation.Data.Repositories
         public IEnumerable<Appointment> GetUpcomingAppointments()
         {
             var today = DateTime.Today;
-            return _dbSet.Include(a => a.Patient)
+            var appointments = _dbSet.Include(a => a.Patient)
                         .Include(a => a.Doctor)
                         .Include(a => a.Department)
                         .Where(a => a.AppointmentDate >= today && a.IsActive)
-                        .OrderBy(a => a.AppointmentDate)
-                        .ThenBy(a => a.AppointmentTime)
                         .ToList();
+
+            return appointments.OrderBy(a => a.AppointmentDate)
+                        .ThenBy(a => a.AppointmentTime);
         }
 
         public IEnumerable<Appointment> GetAppointmentsByStatus(AppointmentStatus status)
         {
-            return _dbSet.Include(a => a.Patient)
+            var appointments = _dbSet.Include(a => a.Patient)
                         .Include(a => a.Doctor)
                         .Include(a => a.Department)
                         .Where(a => a.Status == status && a.IsActive)
-                        .OrderBy(a => a.AppointmentDate)
-                        .ThenBy(a => a.AppointmentTime)
                         .ToList();
+
+            return appointments.OrderBy(a => a.AppointmentDate)
+                        .ThenBy(a => a.AppointmentTime);
         }
 
         public bool HasConflictingAppointment(int doctorId, DateTime appointmentDate, TimeSpan appointmentTime, int? excludeAppointmentId = null)

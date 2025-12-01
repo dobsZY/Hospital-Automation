@@ -226,6 +226,24 @@ namespace HospitalAutomation.Web.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult GetDoctorsByDepartment(int departmentId)
+        {
+            try
+            {
+                var doctors = _userService.GetDoctors()
+                    .Where(d => d.DepartmentId == departmentId)
+                    .OrderBy(d => d.FullName)
+                    .Select(d => new { id = d.Id, fullName = d.FullName });
+                
+                return Json(doctors);
+            }
+            catch
+            {
+                return Json(Enumerable.Empty<object>());
+            }
+        }
+
         private void LoadViewBagData()
         {
             ViewBag.Patients = new SelectList(_patientService.GetAllPatients().OrderBy(p => p.FullName), "Id", "FullName");

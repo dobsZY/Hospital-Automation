@@ -33,6 +33,13 @@
                         </div>
 
                         <div class="mb-4">
+                            <label asp-for="NoteType" class="form-label fw-bold">Not Tipi</label>
+                            <select asp-for="NoteType" class="form-select" asp-items="Html.GetEnumSelectList<HospitalAutomation.Models.Enums.NursingNoteType>()">
+                            </select>
+                            <span asp-validation-for="NoteType" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
                             <label asp-for="NoteDateTime" class="form-label fw-bold">Not Zamanı</label>
                             <input asp-for="NoteDateTime" class="form-control" type="datetime-local" required />
                             <span asp-validation-for="NoteDateTime" class="text-danger"></span>

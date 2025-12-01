@@ -39,6 +39,7 @@ namespace HospitalAutomation.Models
         public string? MedicalLicenseNumber { get; set; } // Tıp lisans numarası
         public int? ExperienceYears { get; set; } // Deneyim yılı
         public string? Education { get; set; } // Eğitim bilgisi
+        public string? ProfilePicturePath { get; set; }
 
         [NotMapped]
         public string FullName => $"{FirstName} {LastName}";

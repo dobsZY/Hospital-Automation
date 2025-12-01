@@ -16,7 +16,7 @@
         </a>
     </div>
 
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="card shadow-sm border-0 mb-4 d-none">
         <div class="card-body py-3">
             <form asp-action="Index" method="get" class="row g-3 align-items-end">
                 <div class="col-md-4">
@@ -95,32 +95,12 @@
                                             </a>
                                             @if (user.Username != "admin")
                                             {
-                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal_@user.Id" title="Sil">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                <form asp-action="Delete" asp-route-id="@user.Id" method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil" onclick="return confirmDelete(event, '@user.FullName adlı kullanıcıyı silmek istediğinize emin misiniz?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
                                             }
-                                        </div>
-
-                                        <!-- Delete Modal -->
-                                        <div class="modal fade" id="deleteModal_@user.Id" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Kullanıcı Sil</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body text-start">
-                                                        <p><strong>@user.FullName</strong> adlı kullanıcıyı silmek istediğinize emin misiniz?</p>
-                                                        <p class="text-danger small mb-0"><i class="bi bi-exclamation-triangle me-1"></i>Bu işlem geri alınamaz.</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
-                                                        <form asp-action="Delete" asp-route-id="@user.Id" method="post">
-                                                            <button type="submit" class="btn btn-danger">Sil</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </td>
                                 </tr>

@@ -52,10 +52,17 @@ namespace HospitalAutomation.Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Patient patient)
         {
+            Console.WriteLine(">>> Patient/Create [POST] Metoduna Girildi");
             try
             {
                 if (!ModelState.IsValid)
                 {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($">>> ModelState Error: {error}");
+                    }
+                    
                     LoadViewBagData();
                     return View(patient);
                 }
@@ -63,7 +70,7 @@ namespace HospitalAutomation.Web.Controllers
                 if (_patientService.CreatePatient(patient))
                 {
                     TempData["SuccessMessage"] = "Hasta başarıyla kaydedildi!";
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Create"); // Formu temizlemek için Create sayfasına yönlendir
                 }
 
                 ModelState.AddModelError("", "Hasta kaydedilemedi");

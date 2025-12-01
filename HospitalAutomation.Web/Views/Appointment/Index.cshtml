@@ -43,8 +43,31 @@
                     <td>@appointment.AppointmentDate.ToString("dd.MM.yyyy")</td>
                     <td>@appointment.AppointmentTime.ToString(@"hh\:mm")</td>
                     <td>
-                        <span class="badge bg-@(appointment.Status == AppointmentStatus.Scheduled ? "primary" : appointment.Status == AppointmentStatus.Completed ? "success" : "danger")">
-                            @appointment.Status
+                        @{
+                            string statusText = "";
+                            string statusClass = "";
+                            switch(appointment.Status)
+                            {
+                                case AppointmentStatus.Scheduled:
+                                    statusText = "Planlandı";
+                                    statusClass = "primary";
+                                    break;
+                                case AppointmentStatus.Completed:
+                                    statusText = "Tamamlandı";
+                                    statusClass = "success";
+                                    break;
+                                case AppointmentStatus.Cancelled:
+                                    statusText = "İptal Edildi";
+                                    statusClass = "danger";
+                                    break;
+                                default:
+                                    statusText = appointment.Status.ToString();
+                                    statusClass = "secondary";
+                                    break;
+                            }
+                        }
+                        <span class="badge bg-@statusClass">
+                            @statusText
                         </span>
                     </td>
                     <td>@(appointment.Notes ?? "-")</td>

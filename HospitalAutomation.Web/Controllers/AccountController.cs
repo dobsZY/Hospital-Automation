@@ -227,6 +227,78 @@ namespace HospitalAutomation.Web.Controllers
             return RedirectToAction("Login");
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadProfilePicture(IFormFile profilePicture)
+        {
+            try
+            {
+                var currentUser = SessionManager.GetCurrentUser(HttpContext);
+                if (currentUser == null) return RedirectToAction("Login");
+
+                if (profilePicture != null && profilePicture.Length > 0)
+                {
+                    // Validate extension
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                    var extension = Path.GetExtension(profilePicture.FileName).ToLowerInvariant();
+                    if (!allowedExtensions.Contains(extension))
+                    {
+                        TempData["ErrorMessage"] = "Sadece resim dosyaları (jpg, jpeg, png, gif, webp) yüklenebilir.";
+                        return RedirectToAction("Profile");
+                    }
+
+                    // Validate size (max 5MB)
+                    if (profilePicture.Length > 5 * 1024 * 1024)
+                    {
+                         TempData["ErrorMessage"] = "Dosya boyutu 5MB'dan büyük olamaz.";
+                         return RedirectToAction("Profile");
+                    }
+
+                    // Create folder if not exists
+                    var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                    var uploadsFolder = Path.Combine(webRootPath, "uploads", "profiles");
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+
+                    // Unique filename
+                    var uniqueFileName = $"{currentUser.Id}_{Guid.NewGuid()}{extension}";
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await profilePicture.CopyToAsync(fileStream);
+                    }
+
+                    // Update user in DB
+                    var user = _userService.GetUserById(currentUser.Id);
+                    
+                    // Delete old image if exists
+                    if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+                    {
+                         var oldPath = Path.Combine(webRootPath, user.ProfilePicturePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                         if (System.IO.File.Exists(oldPath)) 
+                         {
+                             try { System.IO.File.Delete(oldPath); } catch {} 
+                         }
+                    }
+
+                    user.ProfilePicturePath = $"/uploads/profiles/{uniqueFileName}";
+                    _userService.UpdateUser(user);
+                    
+                    // Update session if we were storing image in session (we are not currently, but good to know)
+                }
+                
+                TempData["SuccessMessage"] = "Profil resmi güncellendi.";
+                return RedirectToAction("Profile");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Resim yüklenirken hata: {ex.Message}";
+                return RedirectToAction("Profile");
+            }
+        }
+
         [HttpGet]
         public IActionResult AccessDenied()
         {

@@ -13,17 +13,20 @@
 </div>
 
 <div class="row mb-3">
+    <!-- Manual search hidden in favor of DataTables search -->
+    <!--
     <div class="col-md-12">
         <form asp-action="Index" method="get" class="d-flex">
             <input type="text" name="searchTerm" class="form-control me-2" placeholder="Hasta ara (Ad, Soyad, TC Kimlik No, Telefon, Email)" value="@ViewBag.SearchTerm" />
             <button type="submit" class="btn btn-outline-primary">Ara</button>
         </form>
     </div>
+    -->
 </div>
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
+<div class="table-responsive card shadow-sm p-3 border-0">
+    <table class="table table-striped table-hover align-middle" id="patientsTable">
+        <thead class="table-light">
             <tr>
                 <th>TC Kimlik No</th>
                 <th>Ad</th>
@@ -49,14 +52,22 @@
                     <td>@(patient.Phone ?? "-")</td>
                     <td>@(patient.Email ?? "-")</td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-sm btn-info">Detay</a>
-                        <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-sm btn-warning">Düzenle</a>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <form asp-action="Delete" asp-route-id="@patient.Id" method="post" class="d-inline" onsubmit="return confirm('Bu hastayı silmek istediğinizden emin misiniz?');">
-                                <button type="submit" class="btn btn-sm btn-danger">Sil</button>
-                            </form>
-                        }
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-sm btn-info text-white" title="Detay">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-sm btn-warning text-white" title="Düzenle">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <form asp-action="Delete" asp-route-id="@patient.Id" method="post" class="m-0">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Sil" onclick="return confirmDelete(event, 'Bu hastayı silmek istediğinizden emin misiniz?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            }
+                        </div>
                     </td>
                 </tr>
             }

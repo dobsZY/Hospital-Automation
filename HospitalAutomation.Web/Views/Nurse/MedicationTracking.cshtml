@@ -79,7 +79,7 @@
                                     <td class="text-end pe-4">
                                         @if (item.Status == MedicationStatus.Scheduled)
                                         {
-                                            <form asp-action="AdministerMedication" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            <form asp-action="AdministerMedication" asp-route-id="@item.AdministrationId" method="post" class="d-inline">
                                                 <button type="submit" class="btn btn-sm btn-outline-success">
                                                     <i class="bi bi-check-lg me-1"></i>Uygula
                                                 </button>

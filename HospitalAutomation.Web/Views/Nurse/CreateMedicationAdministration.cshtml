@@ -43,7 +43,7 @@
                                     {
                                         foreach (var m in medications)
                                         {
-                                            <option value="@m.Id">@m.Name (@m.Unit)</option>
+                                            <option value="@m.MedicationId">@m.Name (@m.Unit)</option>
                                         }
                                     }
                                 </select>
@@ -56,8 +56,8 @@
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="DoctorId" class="form-label">Talep Eden Doktor</label>
-                                <select asp-for="DoctorId" class="form-select" required>
-                                    <option value="">-- Seçiniz --</option>
+                                <select asp-for="DoctorId" class="form-select">
+                                    <option value="">-- Seçiniz (Opsiyonel) --</option>
                                     @if (doctors != null)
                                     {
                                         foreach (var d in doctors)

@@ -13,13 +13,13 @@ namespace HospitalAutomation.Models
         public int PatientId { get; set; }
 
         [ForeignKey("PatientId")]
-        public Patient Patient { get; set; }
+        public Patient? Patient { get; set; }
 
         [Required]
         public int NurseId { get; set; }
 
         [ForeignKey("NurseId")]
-        public User Nurse { get; set; }
+        public User? Nurse { get; set; }
 
         [Required]
         public DateTime MeasurementDateTime { get; set; }
@@ -35,7 +35,7 @@ namespace HospitalAutomation.Models
         public double? Height { get; set; }
 
         [StringLength(500)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         [NotMapped]
         public string BloodPressure => 

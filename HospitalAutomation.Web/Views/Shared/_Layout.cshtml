@@ -6,6 +6,10 @@
     <title>@ViewData["Title"] - Hastane Otomasyon Sistemi</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -169,7 +173,17 @@
                         <div class="navbar-right">
                             <div class="user-info">
                                 <div class="user-avatar">
-                                    <i class="bi bi-person-circle"></i>
+                                    @{
+                                        var profilePic = SessionManager.GetProfilePicture();
+                                    }
+                                    @if (!string.IsNullOrEmpty(profilePic))
+                                    {
+                                        <img src="@profilePic" alt="Avatar" class="rounded-circle object-fit-cover" style="width: 100%; height: 100%;">
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-person-circle"></i>
+                                    }
                                 </div>
                                 <div class="user-details">
                                     <span class="user-name">@SessionManager.GetDisplayName()</span>
@@ -197,22 +211,7 @@
 
                 <!-- Page Content -->
                 <div class="content-wrapper">
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                            <i class="bi bi-check-circle me-2"></i>
-                            @TempData["SuccessMessage"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
-                    @if (TempData["ErrorMessage"] != null)
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            @TempData["ErrorMessage"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
+                    <!-- Old Bootstrap Alerts removed in favor of SweetAlert2 -->
                     @RenderBody()
                 </div>
             </div>
@@ -236,33 +235,52 @@
             </nav>
         </header>
         <main class="public-main">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="container mt-3">
-                    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                        <i class="bi bi-check-circle me-2"></i>
-                        @TempData["SuccessMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                </div>
-            }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="container mt-3">
-                    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        @TempData["ErrorMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                </div>
-            }
+            <!-- Old Bootstrap Alerts removed in favor of SweetAlert2 -->
             @RenderBody()
         </main>
     }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables & SweetAlert2 JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Modals", required: false)
+
+    <script>
+        $(document).ready(function () {
+            // SweetAlert2 Integration for TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Başarılı!',
+                    html: '@Html.Raw(TempData["SuccessMessage"])',
+                    icon: 'success',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#10b981'
+                });
+                </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Hata!',
+                    text: '@TempData["ErrorMessage"]',
+                    icon: 'error',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#ef4444'
+                });
+                </text>
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -22,11 +22,17 @@ namespace HospitalAutomation.Models.Enums
 
     public enum AppointmentStatus
     {
+        [Display(Name = "Planlandı")]
         Scheduled = 1,
+        [Display(Name = "Tamamlandı")]
         Completed = 2,
+        [Display(Name = "İptal Edildi")]
         Cancelled = 3,
+        [Display(Name = "Gelmedi")]
         NoShow = 4,
+        [Display(Name = "Devam Ediyor")]
         InProgress = 5,
+        [Display(Name = "Ertelendi")]
         Rescheduled = 6
     }
 

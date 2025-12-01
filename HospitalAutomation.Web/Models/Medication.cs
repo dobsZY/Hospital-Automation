@@ -15,16 +15,16 @@ namespace HospitalAutomation.Models
         public string Name { get; set; }
 
         [StringLength(100)]
-        public string Dosage { get; set; }
+        public string? Dosage { get; set; }
 
         [StringLength(50)]
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [StringLength(100)]
-        public string Manufacturer { get; set; }
+        public string? Manufacturer { get; set; }
 
         public new bool IsActive { get; set; } = true;
     }
@@ -38,24 +38,24 @@ namespace HospitalAutomation.Models
         public int PatientId { get; set; }
 
         [ForeignKey("PatientId")]
-        public Patient Patient { get; set; }
+        public Patient? Patient { get; set; }
 
         [Required]
         public int MedicationId { get; set; }
 
         [ForeignKey("MedicationId")]
-        public Medication Medication { get; set; }
+        public Medication? Medication { get; set; }
 
         [Required]
         public int NurseId { get; set; }
 
         [ForeignKey("NurseId")]
-        public User Nurse { get; set; }
+        public User? Nurse { get; set; }
 
         public int? DoctorId { get; set; }
 
         [ForeignKey("DoctorId")]
-        public User Doctor { get; set; }
+        public User? Doctor { get; set; }
 
         [Required]
         public DateTime ScheduledDateTime { get; set; }
@@ -70,10 +70,10 @@ namespace HospitalAutomation.Models
         public MedicationStatus Status { get; set; }
 
         [StringLength(500)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         [StringLength(500)]
-        public string SideEffects { get; set; }
+        public string? SideEffects { get; set; }
     }
 }
 

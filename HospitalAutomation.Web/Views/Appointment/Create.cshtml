@@ -15,6 +15,23 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
+                            <label asp-for="DepartmentId" class="form-label">Bölüm</label>
+                            <select asp-for="DepartmentId" class="form-select" asp-items="ViewBag.Departments" id="DepartmentId">
+                                <option value="">Seçiniz</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DoctorId" class="form-label">Doktor</label>
+                            <select asp-for="DoctorId" class="form-select" id="DoctorId" disabled>
+                                <option value="">Önce Bölüm Seçiniz</option>
+                            </select>
+                            <span asp-validation-for="DoctorId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
                             <label asp-for="PatientId" class="form-label">Hasta</label>
                             <select asp-for="PatientId" class="form-select" asp-items="ViewBag.Patients">
                                 <option value="">Seçiniz</option>
@@ -23,25 +40,8 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label asp-for="DoctorId" class="form-label">Doktor</label>
-                            <select asp-for="DoctorId" class="form-select" asp-items="ViewBag.Doctors">
-                                <option value="">Seçiniz</option>
-                            </select>
-                            <span asp-validation-for="DoctorId" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="DepartmentId" class="form-label">Bölüm</label>
-                            <select asp-for="DepartmentId" class="form-select" asp-items="ViewBag.Departments">
-                                <option value="">Seçiniz</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="AppointmentDate" class="form-label"></label>
-                            <input asp-for="AppointmentDate" class="form-control" type="date" />
+                            <label asp-for="AppointmentDate" class="form-label">Randevu Tarihi</label>
+                            <input asp-for="AppointmentDate" class="form-control" type="date" id="AppointmentDate" disabled />
                             <span asp-validation-for="AppointmentDate" class="text-danger"></span>
                         </div>
                     </div>
@@ -49,28 +49,28 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label asp-for="AppointmentTime" class="form-label">Randevu Saati</label>
-                            <select asp-for="AppointmentTime" class="form-select" id="AppointmentTime">
-                                <option value="">Seçiniz</option>
+                            <select asp-for="AppointmentTime" class="form-select" id="AppointmentTime" disabled>
+                                <option value="">Önce Tarih Seçiniz</option>
                             </select>
                             <span asp-validation-for="AppointmentTime" class="text-danger"></span>
-                            <small class="form-text text-muted">Doktor ve tarih seçtikten sonra müsait saatler görünecektir.</small>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Status" class="form-label"></label>
-                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<AppointmentStatus>()" class="form-select"></select>
+                            <label asp-for="Status" class="form-label">Durum</label>
+                            <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<AppointmentStatus>()">
+                            </select>
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Notes" class="form-label"></label>
-                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        <label asp-for="Symptoms" class="form-label">Şikayet / Belirtiler</label>
+                        <textarea asp-for="Symptoms" class="form-control" rows="3"></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Symptoms" class="form-label"></label>
-                        <textarea asp-for="Symptoms" class="form-control" rows="3"></textarea>
+                        <label asp-for="Notes" class="form-label">Notlar</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -87,7 +87,53 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function() {
-            $('#DoctorId, #AppointmentDate').change(function() {
+            // Bölüm değiştiğinde doktorları getir
+            $('#DepartmentId').change(function() {
+                var departmentId = $(this).val();
+                var doctorSelect = $('#DoctorId');
+                
+                doctorSelect.empty();
+                doctorSelect.append('<option value="">Seçiniz</option>');
+                doctorSelect.prop('disabled', true);
+                
+                $('#AppointmentDate').prop('disabled', true).val('');
+                $('#AppointmentTime').empty().append('<option value="">Önce Tarih Seçiniz</option>').prop('disabled', true);
+
+                if (departmentId) {
+                    $.ajax({
+                        url: '@Url.Action("GetDoctorsByDepartment", "Appointment")',
+                        type: 'GET',
+                        data: { departmentId: departmentId },
+                        success: function(doctors) {
+                            if (doctors && doctors.length > 0) {
+                                $.each(doctors, function(i, doctor) {
+                                    doctorSelect.append($('<option></option>').val(doctor.id).text(doctor.fullName));
+                                });
+                                doctorSelect.prop('disabled', false);
+                            } else {
+                                doctorSelect.append('<option value="" disabled>Bu bölümde doktor bulunamadı</option>');
+                            }
+                        },
+                        error: function() {
+                            alert('Doktorlar yüklenirken bir hata oluştu.');
+                        }
+                    });
+                }
+            });
+
+            // Doktor değiştiğinde tarih seçimini aç
+            $('#DoctorId').change(function() {
+                var doctorId = $(this).val();
+                if (doctorId) {
+                    $('#AppointmentDate').prop('disabled', false);
+                } else {
+                    $('#AppointmentDate').prop('disabled', true).val('');
+                    $('#AppointmentTime').empty().append('<option value="">Önce Tarih Seçiniz</option>').prop('disabled', true);
+                }
+            });
+
+            // Tarih değiştiğinde saatleri getir
+            $('#AppointmentDate').change(function() {
                 loadAvailableTimeSlots();
             });
             
@@ -98,6 +144,7 @@
                 
                 timeSelect.empty();
                 timeSelect.append('<option value="">Seçiniz</option>');
+                timeSelect.prop('disabled', true);
                 
                 if (doctorId && date) {
                     $.ajax({
@@ -112,6 +159,7 @@
                                 $.each(timeSlots, function(i, timeSlot) {
                                     timeSelect.append($('<option></option>').val(timeSlot).text(timeSlot));
                                 });
+                                timeSelect.prop('disabled', false);
                             } else {
                                 timeSelect.append($('<option></option>').text('Müsait saat bulunamadı').attr('disabled', true));
                             }

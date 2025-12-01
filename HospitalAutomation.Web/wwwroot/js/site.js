@@ -60,3 +60,57 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// DataTables Integration & SweetAlert Helpers
+$(document).ready(function() {
+    if ($.fn.DataTable) {
+        // Automatically initialize DataTables on tables with class 'table' 
+        // but exclude those with 'no-datatable' class or inside 'no-datatable-container'
+        $('.table:not(.no-datatable)').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
+            },
+            responsive: true,
+            ordering: true,
+            pageLength: 10,
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tümü"]],
+            // Custom DOM positioning for Bootstrap 5
+            dom: "<'row mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                 "<'row'<'col-sm-12'tr>>" +
+                 "<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+        });
+    }
+});
+
+// SweetAlert2 Confirmation Helper for Delete Buttons
+// Usage: onclick="return confirmDelete(event, 'Silmek istediğinize emin misiniz?')"
+window.confirmDelete = function(event, title = 'Silmek istediğinize emin misiniz?', text = 'Bu işlem geri alınamaz!') {
+    event.preventDefault();
+    
+    // Find the form element
+    const form = event.target.closest('form');
+    
+    if (form) {
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal',
+            customClass: {
+                popup: 'rounded-4 shadow-lg',
+                confirmButton: 'btn btn-danger btn-lg px-4',
+                cancelButton: 'btn btn-secondary btn-lg px-4'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+    return false;
+};

@@ -13,13 +13,13 @@ namespace HospitalAutomation.Models
         public int PatientId { get; set; }
 
         [ForeignKey("PatientId")]
-        public virtual Patient Patient { get; set; }
+        public virtual Patient? Patient { get; set; }
 
         [Required(ErrorMessage = "Doktor seçimi gereklidir")]
         public int DoctorId { get; set; }
 
         [ForeignKey("DoctorId")]
-        public virtual User Doctor { get; set; }
+        public virtual User? Doctor { get; set; }
 
         [Required(ErrorMessage = "Randevu tarihi gereklidir")]
         public DateTime AppointmentDate { get; set; }
@@ -30,9 +30,9 @@ namespace HospitalAutomation.Models
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;
 
         [StringLength(500)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
-        public string Symptoms { get; set; }
+        public string? Symptoms { get; set; }
 
         public DateTime? CompletedDate { get; set; }
 
@@ -40,7 +40,7 @@ namespace HospitalAutomation.Models
 
         // Navigation Properties
         [ForeignKey("DepartmentId")]
-        public virtual Department Department { get; set; }
+        public virtual Department? Department { get; set; }
     }
 }
 

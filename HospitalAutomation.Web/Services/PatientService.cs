@@ -52,8 +52,12 @@ namespace HospitalAutomation.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"CreatePatient Error: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+                Console.WriteLine($">>> CreatePatient Error: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($">>> Inner Exception: {ex.InnerException.Message}");
+                }
+                Console.WriteLine($">>> Stack Trace: {ex.StackTrace}");
 
                 throw new Exception($"Hasta oluşturulurken hata oluştu: {ex.Message}", ex);
             }

@@ -12,6 +12,7 @@ namespace HospitalAutomation.Utilities
         private const string RoleClaim = "Role";
         private const string PatientIdClaim = "PatientId";
         private const string FullNameClaim = "FullName";
+        private const string ProfilePictureClaim = "ProfilePicture";
 
         private static IHttpContextAccessor _httpContextAccessor;
 
@@ -168,6 +169,13 @@ namespace HospitalAutomation.Utilities
         public static string GetDisplayName() => GetDisplayName(HttpContext);
         public static string GetUserType() => GetUserType(HttpContext);
 
+        public static string GetProfilePicture()
+        {
+            var context = HttpContext;
+            if (context?.User == null) return null;
+            return context.User.FindFirst(ProfilePictureClaim)?.Value;
+        }
+
         public static bool HasPermission(UserRole requiredRole)
         {
             if (!IsStaffLogin)
@@ -221,7 +229,8 @@ namespace HospitalAutomation.Utilities
                 new Claim(RoleClaim, user.Role.ToString()),
                 new Claim(FullNameClaim, user.FullName ?? $"{user.FirstName} {user.LastName}"),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim(ProfilePictureClaim, user.ProfilePicturePath ?? "")
             };
 
             var identity = new ClaimsIdentity(claims, "Cookie");

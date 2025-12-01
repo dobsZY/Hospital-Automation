@@ -20,7 +20,9 @@ namespace HospitalAutomation.Data.Interfaces
         INursingNoteRepository NursingNotes { get; }
 
         int Complete();
+        System.Threading.Tasks.Task<int> CompleteAsync();
         int Save();
+        System.Threading.Tasks.Task<int> SaveAsync();
         int SaveChanges();
         void BeginTransaction();
         void CommitTransaction();

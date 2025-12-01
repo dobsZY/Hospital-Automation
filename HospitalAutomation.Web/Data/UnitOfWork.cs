@@ -68,6 +68,25 @@ namespace HospitalAutomation.Data
             {
                 // EF update hatalarını ayırt edip loglayalım
                 var innerMessage = dbEx.InnerException != null ? dbEx.InnerException.Message : dbEx.Message;
+                Console.WriteLine($">>> DbUpdateException: {innerMessage}");
+                throw new Exception($"Veritabanı hatası: {innerMessage}", dbEx);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($">>> UnitOfWork Complete Error: {ex.Message}");
+                throw new Exception("Veritabanı kaydetme işlemi sırasında hata oluştu.", ex);
+            }
+        }
+
+        public async System.Threading.Tasks.Task<int> CompleteAsync()
+        {
+            try
+            {
+                return await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                var innerMessage = dbEx.InnerException != null ? dbEx.InnerException.Message : dbEx.Message;
                 throw new Exception($"Veritabanı hatası: {innerMessage}", dbEx);
             }
             catch (Exception ex)
@@ -79,6 +98,11 @@ namespace HospitalAutomation.Data
         public int Save()
         {
             return Complete();
+        }
+
+        public async System.Threading.Tasks.Task<int> SaveAsync()
+        {
+            return await CompleteAsync();
         }
 
         public int SaveChanges()

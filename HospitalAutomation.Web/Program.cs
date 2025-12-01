@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using HospitalAutomation.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,9 @@ builder.Services.AddAuthorization(options =>
 LogHelper.Initialize();
 
 var app = builder.Build();
+
+// Global Exception Handling Middleware
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Ensure database is created and seed initial data
 using (var scope = app.Services.CreateScope())

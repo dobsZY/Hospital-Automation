@@ -255,6 +255,37 @@ namespace HospitalAutomation.Web.Controllers
                 return View(patient);
             }
         }
+        [HttpGet]
+        public IActionResult GetAvailableTimeSlots(int doctorId, DateTime date)
+        {
+            try
+            {
+                var timeSlots = _appointmentService.GetAvailableTimeSlots(doctorId, date);
+                return Json(timeSlots.Select(ts => ts.ToString(@"hh\:mm")));
+            }
+            catch
+            {
+                return Json(Enumerable.Empty<string>());
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetDoctorsByDepartment(int departmentId)
+        {
+            try
+            {
+                var doctors = _userService.GetDoctors()
+                    .Where(d => d.DepartmentId == departmentId)
+                    .OrderBy(d => d.FullName)
+                    .Select(d => new { id = d.Id, fullName = d.FullName });
+                
+                return Json(doctors);
+            }
+            catch
+            {
+                return Json(Enumerable.Empty<object>());
+            }
+        }
     }
 }
 

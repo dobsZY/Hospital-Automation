@@ -124,7 +124,7 @@
                 if (doctorId && date) {
                     container.html('<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Yükleniyor...</span></div>');
                     
-                    $.get('/Appointment/GetAvailableTimeSlots', { doctorId: doctorId, date: date }, function (slots) {
+                    $.get('@Url.Action("GetAvailableTimeSlots", "PatientPortal")', { doctorId: doctorId, date: date }, function (slots) {
                         container.empty();
                         if (slots && slots.length > 0) {
                             $.each(slots, function (i, slot) {

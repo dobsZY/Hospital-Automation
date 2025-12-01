@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using HospitalAutomation.Data.Interfaces;
 using HospitalAutomation.Models;
 
@@ -24,9 +25,19 @@ namespace HospitalAutomation.Data.Repositories
             return _dbSet.FirstOrDefault(x => x.Id == id && x.IsActive);
         }
 
+        public virtual async Task<T> GetByIdAsync(int id)
+        {
+            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
+        }
+
         public virtual IEnumerable<T> GetAll()
         {
             return _dbSet.Where(x => x.IsActive).ToList();
+        }
+
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await _dbSet.Where(x => x.IsActive).ToListAsync();
         }
 
         public virtual IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
@@ -34,9 +45,19 @@ namespace HospitalAutomation.Data.Repositories
             return _dbSet.Where(predicate).Where(x => x.IsActive).ToList();
         }
 
+        public virtual async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).Where(x => x.IsActive).ToListAsync();
+        }
+
         public virtual T SingleOrDefault(Expression<Func<T, bool>> predicate)
         {
             return _dbSet.Where(predicate).Where(x => x.IsActive).SingleOrDefault();
+        }
+
+        public virtual async Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).Where(x => x.IsActive).SingleOrDefaultAsync();
         }
 
         public virtual void Add(T entity)
@@ -47,6 +68,16 @@ namespace HospitalAutomation.Data.Repositories
             entity.CreatedDate = DateTime.Now;
             entity.IsActive = true;
             _dbSet.Add(entity);
+        }
+
+        public virtual async Task AddAsync(T entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            entity.CreatedDate = DateTime.Now;
+            entity.IsActive = true;
+            await _dbSet.AddAsync(entity);
         }
 
         public virtual void AddRange(IEnumerable<T> entities)
@@ -60,6 +91,19 @@ namespace HospitalAutomation.Data.Repositories
                 entity.IsActive = true;
             }
             _dbSet.AddRange(entities);
+        }
+
+        public virtual async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            foreach (var entity in entities)
+            {
+                entity.CreatedDate = DateTime.Now;
+                entity.IsActive = true;
+            }
+            await _dbSet.AddRangeAsync(entities);
         }
 
         public virtual void Update(T entity)

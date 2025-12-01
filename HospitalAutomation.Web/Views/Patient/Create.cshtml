@@ -141,24 +141,24 @@
                     </div>
 
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <label asp-for="Medications" class="form-label fw-semibold text-muted small">Kullandığı İlaçlar</label>
-                            <textarea asp-for="Medications" class="form-control" rows="2"></textarea>
-                        </div>
-
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                              <div class="form-floating mb-3">
                                 <input asp-for="Insurance" class="form-control" placeholder="Sigorta" />
                                 <label asp-for="Insurance">Sigorta</label>
                             </div>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                              <div class="form-floating mb-3">
                                 <input asp-for="Occupation" class="form-control" placeholder="Meslek" />
                                 <label asp-for="Occupation">Meslek</label>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Medications" class="form-label fw-semibold text-muted small">Kullandığı İlaçlar</label>
+                        <textarea asp-for="Medications" class="form-control" rows="3"></textarea>
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
