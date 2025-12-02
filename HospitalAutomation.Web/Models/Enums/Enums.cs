@@ -15,8 +15,11 @@ namespace HospitalAutomation.Models.Enums
 
     public enum Gender
     {
+        [Display(Name = "Erkek")]
         Male = 1,
+        [Display(Name = "Kadın")]
         Female = 2,
+        [Display(Name = "Diğer")]
         Other = 3
     }
 
@@ -38,13 +41,21 @@ namespace HospitalAutomation.Models.Enums
 
     public enum BloodType
     {
+        [Display(Name = "A Rh+")]
         APositive,
+        [Display(Name = "A Rh-")]
         ANegative,
+        [Display(Name = "B Rh+")]
         BPositive,
+        [Display(Name = "B Rh-")]
         BNegative,
+        [Display(Name = "AB Rh+")]
         ABPositive,
+        [Display(Name = "AB Rh-")]
         ABNegative,
+        [Display(Name = "0 Rh+")]
         OPositive,
+        [Display(Name = "0 Rh-")]
         ONegative
     }
 
