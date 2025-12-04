@@ -4,13 +4,14 @@ namespace HospitalAutomation.Models.Enums
 {
     public enum UserRole
     {
+        [Display(Name = "Yönetici")]
         Admin = 1,
+        [Display(Name = "Doktor")]
         Doctor = 2,
+        [Display(Name = "Hemşire")]
         Nurse = 3,
-        Receptionist = 4,
-        Staff = 5,
-        Pharmacist = 6,
-        Technician = 7
+        [Display(Name = "Sekreter")]
+        Receptionist = 4
     }
 
     public enum Gender

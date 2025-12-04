@@ -52,7 +52,7 @@
                                 </select>
                                 <span asp-validation-for="Role" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6" id="departmentDiv">
+                            <div class="col-md-6" id="departmentDiv" style="display:none;">
                                 <label asp-for="DepartmentId" class="form-label">Bölüm</label>
                                 <select asp-for="DepartmentId" class="form-select">
                                     <option value="">-- Seçiniz --</option>
@@ -109,18 +109,19 @@
     <script>
         $(document).ready(function() {
             $('#roleSelect').change(function() {
-                var role = $(this).find("option:selected").text();
-                if (role === 'Doctor') {
+                var roleValue = $(this).val(); // ID'yi al (Doctor=2)
+                
+                if (roleValue === '2') { // Doktor
                     $('#doctorFields').removeClass('d-none');
-                    $('#departmentDiv').show();
-                } else if (role === 'Nurse' || role === 'Staff') {
-                    $('#doctorFields').addClass('d-none');
                     $('#departmentDiv').show();
                 } else {
                     $('#doctorFields').addClass('d-none');
-                    // $('#departmentDiv').hide(); // Bölüm herkes için gerekebilir
+                    $('#departmentDiv').hide(); // Sadece doktorda bölüm seçimi olsun
                 }
             });
+            
+            // Sayfa yüklendiğinde de çalıştır (Edit modu veya validation hatası dönüşü için)
+            $('#roleSelect').trigger('change');
         });
     </script>
 }

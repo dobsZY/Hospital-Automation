@@ -203,7 +203,11 @@ namespace HospitalAutomation.Services
         {
             try
             {
-                AuthorizationHelper.EnsureStaff();
+                // Hastaların doktorları görmesine izin ver
+                if (!SessionManager.IsLoggedIn)
+                     throw new UnauthorizedAccessException("Doktor listesini görmek için giriş yapmalısınız.");
+
+                // AuthorizationHelper.EnsureStaff(); // Bu satırı kaldırıyoruz
                 return _unitOfWork.Users.GetDoctors();
             }
             catch (UnauthorizedAccessException)

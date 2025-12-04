@@ -1,4 +1,8 @@
 using System.Linq;
+using System.IO;
+using Serilog;
+using Serilog.Events;
+using HospitalAutomation.Web.Filters;
 using HospitalAutomation.Data;
 using HospitalAutomation.Data.Interfaces;
 using HospitalAutomation.Models;
@@ -15,8 +19,25 @@ using HospitalAutomation.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// Configure Serilog for file + console logging
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(Path.Combine(AppContext.BaseDirectory, "logs", "hospital-.log"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 31, shared: true)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+// Add services to the container and register logging filter
+builder.Services.AddScoped<LoggingActionFilter>();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<LoggingActionFilter>();
+});
 
 // Database Configuration
 var connectionString = builder.Configuration.GetConnectionString("HospitalConnectionString");
@@ -56,7 +77,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("NurseOnly", policy => policy.RequireRole("Nurse", "Admin"));
 });
 
-// Initialize LogHelper
+// Initialize LogHelper for legacy components that rely on file logging
 LogHelper.Initialize();
 
 var app = builder.Build();
@@ -95,12 +116,13 @@ app.Use(async (context, next) =>
 });
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseExceptionHandler("/Home/Error");
+//     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+//     app.UseHsts();
+// }
+app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

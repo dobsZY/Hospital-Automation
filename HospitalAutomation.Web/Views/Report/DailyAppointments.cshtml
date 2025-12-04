@@ -1,58 +1,61 @@
 @model IEnumerable<HospitalAutomation.Models.Appointment>
 @using HospitalAutomation.Models.Enums
+@using System.Linq
 
 @{
     ViewData["Title"] = "Günlük Randevu Raporu";
     var selectedDate = ViewBag.SelectedDate as DateTime? ?? DateTime.Today;
+    var appointmentList = Model != null ? Model.OrderBy(a => a.AppointmentTime).ToList() : new List<HospitalAutomation.Models.Appointment>();
 }
 
 <div class="container-fluid py-4">
-    <div class="card shadow-sm border-0 no-print">
+    <!-- Filtreleme Alanı -->
+    <div class="card shadow-sm border-0 mb-4 d-print-none">
         <div class="card-body py-3">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-file-earmark-bar-graph me-2"></i>Randevu Raporu</h4>
                 
-                <div class="d-flex gap-3 align-items-center">
-                    <form asp-action="DailyAppointments" method="get" class="d-flex gap-2 align-items-center">
-                        <label class="text-muted small text-nowrap">Rapor Tarihi:</label>
-                        <input type="date" name="date" class="form-control form-control-sm" value="@selectedDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
-                    </form>
-                    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-printer me-2"></i>Yazdır
-                    </button>
-                </div>
+                <form asp-action="DailyAppointments" method="get" class="d-flex gap-2 align-items-center">
+                    <label class="text-muted small text-nowrap fw-bold">Tarih Seç:</label>
+                    <input type="date" name="date" class="form-control form-control-sm" value="@selectedDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Print Header (Only visible in print) -->
-    <div class="d-none d-print-block mb-4">
-        <h2 class="text-center">Günlük Randevu Raporu</h2>
-        <p class="text-center text-muted">Tarih: @selectedDate.ToString("dd.MM.yyyy")</p>
-        <hr />
+    <!-- Butonların Yerleşeceği Özel Alan -->
+    <div class="d-flex justify-content-end mb-3 d-print-none" id="exportButtonsContainer">
+         <!-- Butonlar buraya JavaScript ile eklenecek -->
     </div>
 
-    <div class="card shadow-sm border-0 mt-4">
+    <!-- Rapor İçeriği -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+             <div class="d-flex justify-content-between align-items-center">
+                 <h5 class="mb-0">@selectedDate.ToString("dd MMMM yyyy") Tarihli Randevular</h5>
+             </div>
+        </div>
         <div class="card-body p-0">
-            @if (Model != null && Model.Any())
+            @if (appointmentList.Any())
             {
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
+                <div class="table-responsive p-3">
+                    <!-- 'no-datatable' sınıfı ile site.js'in otomatik başlatmasını engelliyoruz -->
+                    <table id="dailyReportTable" class="table table-striped table-hover align-middle mb-0 no-datatable" style="width:100%">
                         <thead class="bg-light">
                             <tr>
-                                <th class="py-3 ps-4">Saat</th>
-                                <th class="py-3">Hasta Adı</th>
-                                <th class="py-3">TC Kimlik No</th>
-                                <th class="py-3">Doktor</th>
-                                <th class="py-3">Bölüm</th>
-                                <th class="py-3">Durum</th>
+                                <th>Saat</th>
+                                <th>Hasta Adı</th>
+                                <th>TC Kimlik No</th>
+                                <th>Doktor</th>
+                                <th>Bölüm</th>
+                                <th>Durum</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var appt in Model.OrderBy(a => a.AppointmentTime))
+                            @foreach (var appt in appointmentList)
                             {
                                 <tr>
-                                    <td class="ps-4 fw-bold">@appt.AppointmentTime</td>
+                                    <td class="fw-bold">@appt.AppointmentTime.ToString(@"hh\:mm")</td>
                                     <td>@appt.Patient?.FullName</td>
                                     <td>@appt.Patient?.NationalId</td>
                                     <td>Dr. @appt.Doctor?.FullName</td>
@@ -61,32 +64,26 @@
                                         @switch (appt.Status)
                                         {
                                             case AppointmentStatus.Scheduled:
-                                                <span class="badge bg-info d-print-none">Bekliyor</span>
-                                                <span class="d-none d-print-inline">Bekliyor</span>
+                                                <span class="badge bg-info">Bekliyor</span>
+                                                <span class="d-none">Bekliyor</span>
                                                 break;
                                             case AppointmentStatus.Completed:
-                                                <span class="badge bg-success d-print-none">Tamamlandı</span>
-                                                <span class="d-none d-print-inline">Tamamlandı</span>
+                                                <span class="badge bg-success">Tamamlandı</span>
+                                                <span class="d-none">Tamamlandı</span>
                                                 break;
                                             case AppointmentStatus.Cancelled:
-                                                <span class="badge bg-danger d-print-none">İptal</span>
-                                                <span class="d-none d-print-inline">İptal</span>
+                                                <span class="badge bg-danger">İptal</span>
+                                                <span class="d-none">İptal</span>
                                                 break;
                                             default:
-                                                <span class="badge bg-secondary d-print-none">@appt.Status</span>
-                                                <span class="d-none d-print-inline">@appt.Status</span>
+                                                <span class="badge bg-secondary">@appt.Status</span>
+                                                <span class="d-none">@appt.Status</span>
                                                 break;
                                         }
                                     </td>
                                 </tr>
                             }
                         </tbody>
-                        <tfoot>
-                            <tr class="bg-light fw-bold">
-                                <td colspan="5" class="ps-4 py-3 text-end">Toplam Randevu:</td>
-                                <td class="py-3">@Model.Count()</td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             }
@@ -101,12 +98,82 @@
     </div>
 </div>
 
-<style>
-    @@media print {
-        .no-print { display: none !important; }
-        .sidebar, header, footer { display: none !important; }
-        .main-content { margin: 0 !important; padding: 0 !important; }
-        .card { box-shadow: none !important; border: 1px solid #ddd !important; }
-    }
-</style>
+@section Styles {
+    <!-- DataTables Buttons CSS'ini KALDIRDIM. Sadece Bootstrap stilleri kullanılacak. -->
+    <style>
+        /* Buton hizalamaları */
+        #exportButtonsContainer .btn {
+            margin-left: 5px;
+        }
+    </style>
+}
 
+@section Scripts {
+    <!-- DataTables Buttons JS -->
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <!-- Bootstrap 5 entegrasyonu JS (CSS değil) -->
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Varsa eski tabloyu temizle
+            if ($.fn.DataTable.isDataTable('#dailyReportTable')) {
+                $('#dailyReportTable').DataTable().destroy();
+            }
+
+            var table = $('#dailyReportTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
+                },
+                pageLength: 25,
+                responsive: true,
+                // DOM: Butonları (B) buraya koymuyoruz, harici ekleyeceğiz. Sadece arama (f) ve tablo (t)
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                     "<'row'<'col-sm-12'tr>>" +
+                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+            });
+
+            // Butonları oluştur
+            var buttons = new $.fn.dataTable.Buttons(table, {
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="bi bi-clipboard me-2"></i>Kopyala',
+                        className: 'btn btn-secondary btn-sm'
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="bi bi-file-earmark-excel me-2"></i>Excel',
+                        className: 'btn btn-success btn-sm'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="bi bi-file-earmark-pdf me-2"></i>PDF',
+                        className: 'btn btn-danger btn-sm'
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="bi bi-printer me-2"></i>Yazdır',
+                        className: 'btn btn-primary btn-sm',
+                        autoPrint: true
+                    }
+                ]
+            });
+
+            // Butonları container'a taşı
+            buttons.container().appendTo($('#exportButtonsContainer'));
+            
+            // AGRESİF TEMİZLİK: DataTables'ın eklediği varsayılan sınıfları zorla siliyoruz
+            setTimeout(function() {
+                $('#exportButtonsContainer .btn').removeClass('dt-button buttons-html5 buttons-print buttons-copy buttons-excel buttons-pdf');
+                $('#exportButtonsContainer .dt-buttons').removeClass('dt-buttons btn-group').addClass('d-flex');
+            }, 100);
+        });
+    </script>
+}

@@ -22,21 +22,37 @@ namespace HospitalAutomation.Services
         {
             try
             {
+                // Debug logs
+                Console.WriteLine($">>> CreateAppointment: IsPatientLogin={SessionManager.IsPatientLogin}, IsStaffLogin={SessionManager.IsStaffLogin}, IsLoggedIn={SessionManager.IsLoggedIn}");
+
                 // Allow staff or patients to create appointments
-                // If patient, ensure they can only create appointments for themselves
                 if (SessionManager.IsPatientLogin)
                 {
                     var currentPatient = SessionManager.CurrentPatient;
-                    if (currentPatient == null || currentPatient.Id != appointment.PatientId)
-                        throw new UnauthorizedAccessException("Sadece kendi randevunuzu oluşturabilirsiniz.");
+                    if (currentPatient != null)
+                    {
+                        // Eğer hasta kendi adına alıyorsa OK
+                        // appointment.PatientId formdan geliyor, currentPatient.Id sessiondan
+                        if (appointment.PatientId == 0) appointment.PatientId = currentPatient.Id;
+                        
+                        if (currentPatient.Id != appointment.PatientId)
+                        {
+                            Console.WriteLine($">>> Unauthorized: Patient {currentPatient.Id} trying to create for {appointment.PatientId}");
+                            throw new UnauthorizedAccessException("Sadece kendi randevunuzu oluşturabilirsiniz.");
+                        }
+                    }
                 }
                 else if (!SessionManager.IsStaffLogin)
                 {
+                    // Kimse değilse hata
+                    Console.WriteLine(">>> Unauthorized: Neither Patient nor Staff");
                     throw new UnauthorizedAccessException("Randevu oluşturmak için giriş yapmalısınız.");
                 }
 
                 if (appointment == null)
                     throw new ArgumentNullException(nameof(appointment));
+                
+                // ... rest of the method
 
                 if (appointment.PatientId <= 0 || appointment.DoctorId <= 0)
                     throw new ArgumentException("Hasta ve doktor bilgisi gereklidir.");

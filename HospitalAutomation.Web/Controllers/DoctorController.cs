@@ -168,11 +168,33 @@ namespace HospitalAutomation.Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CreateMedicalRecord(MedicalRecord record)
         {
+            Console.WriteLine(">>> CreateMedicalRecord [POST] Metoduna Girildi");
             try
             {
+                var currentUser = SessionManager.GetCurrentUser(HttpContext);
+                if (currentUser == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                // DoctorId'yi güvenli bir şekilde session'dan al
+                record.DoctorId = currentUser.Id;
+                
+                // AppointmentId 0 gelirse null yap
+                if (record.AppointmentId == 0) record.AppointmentId = null;
+
+                // Navigation properties validasyonunu kaldır
+                ModelState.Remove("Patient");
+                ModelState.Remove("Doctor");
+                ModelState.Remove("Appointment");
+
                 if (!ModelState.IsValid)
                 {
-                    var currentUser = SessionManager.GetCurrentUser(HttpContext);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($">>> MedicalRecord ModelState Error: {error}");
+                    }
                     ViewBag.Patients = _patientService.GetAllPatients().ToList();
                     ViewBag.Appointments = _appointmentService.GetAppointmentsByDoctor(currentUser.Id).ToList();
                     return View(record);
@@ -182,6 +204,12 @@ namespace HospitalAutomation.Web.Controllers
                 record.CreatedDate = DateTime.Now;
                 record.IsActive = true;
 
+                // Nullable alanları boş string yap (DB hatasını önlemek için)
+                record.Treatment ??= "";
+                record.Prescription ??= "";
+                record.Symptoms ??= "";
+                record.Notes ??= "";
+
                 _unitOfWork.MedicalRecords.Add(record);
                 _unitOfWork.Complete();
 
@@ -190,10 +218,15 @@ namespace HospitalAutomation.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($">>> CreateMedicalRecord Exception: {ex.Message}");
+                if (ex.InnerException != null) Console.WriteLine($">>> Inner: {ex.InnerException.Message}");
+                
                 ModelState.AddModelError("", $"Hata: {ex.Message}");
-                var currentUser = SessionManager.GetCurrentUser(HttpContext);
+                var currentUser = SessionManager.GetCurrentUser(HttpContext); // Catch bloğunda tekrar alıyoruz
                 ViewBag.Patients = _patientService.GetAllPatients().ToList();
-                ViewBag.Appointments = _appointmentService.GetAppointmentsByDoctor(currentUser.Id).ToList();
+                ViewBag.Appointments = currentUser != null 
+                    ? _appointmentService.GetAppointmentsByDoctor(currentUser.Id).ToList() 
+                    : new List<Appointment>();
                 return View(record);
             }
         }

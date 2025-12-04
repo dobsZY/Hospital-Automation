@@ -51,33 +51,61 @@ namespace HospitalAutomation.Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(User user, string password)
         {
+            Console.WriteLine($">>> User Create [POST] - Username: {user.Username}, Role: {user.Role}");
             try
             {
+                // Remove fields that are not required from form
+                ModelState.Remove("PasswordHash");
+                ModelState.Remove("Department");
+                ModelState.Remove("DoctorAppointments");
+                ModelState.Remove("DoctorMedicalRecords");
+                ModelState.Remove("CreatedPatients");
+
                 if (!ModelState.IsValid)
                 {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($">>> User Create ModelState Error: {error}");
+                    }
                     LoadViewBagData();
                     return View(user);
                 }
 
                 if (string.IsNullOrWhiteSpace(password))
                 {
+                    Console.WriteLine(">>> Password is null or empty");
                     ModelState.AddModelError("", "Şifre gereklidir");
                     LoadViewBagData();
                     return View(user);
                 }
 
+                // Manuel Department kontrolü (Sadece Doktorlar için)
+                if (user.Role == UserRole.Doctor && user.DepartmentId == null)
+                {
+                     ModelState.AddModelError("DepartmentId", "Doktorlar için bölüm seçimi zorunludur.");
+                     LoadViewBagData();
+                     return View(user);
+                }
+
+                Console.WriteLine(">>> Calling _userService.CreateUser...");
                 if (_userService.CreateUser(user, password))
                 {
+                    Console.WriteLine(">>> User created successfully");
                     TempData["SuccessMessage"] = "Kullanıcı başarıyla oluşturuldu!";
                     return RedirectToAction("Index");
                 }
 
+                Console.WriteLine(">>> User creation returned false");
                 ModelState.AddModelError("", "Kullanıcı oluşturulamadı");
                 LoadViewBagData();
                 return View(user);
             }
             catch (Exception ex)
             {
+                Console.WriteLine($">>> Create User Exception: {ex.Message}");
+                if (ex.InnerException != null) Console.WriteLine($">>> Inner: {ex.InnerException.Message}");
+                
                 ModelState.AddModelError("", $"Hata: {ex.Message}");
                 LoadViewBagData();
                 return View(user);

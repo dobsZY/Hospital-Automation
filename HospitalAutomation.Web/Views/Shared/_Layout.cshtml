@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HospitalAutomation.Web.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     @if (User.Identity?.IsAuthenticated == true)
@@ -272,7 +273,7 @@
                 <text>
                 Swal.fire({
                     title: 'Hata!',
-                    text: '@TempData["ErrorMessage"]',
+                    html: '@Html.Raw(TempData["ErrorMessage"])',
                     icon: 'error',
                     confirmButtonText: 'Tamam',
                     confirmButtonColor: '#ef4444'
